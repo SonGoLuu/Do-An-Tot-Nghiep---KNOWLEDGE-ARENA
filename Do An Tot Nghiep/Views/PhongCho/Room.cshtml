@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Room";
+}
+
+<h1>@ViewBag.PhongCho.PhongChoId</h1>
+
+<h2>Danh sách người dùng:</h2>
+
+<ul id="user-list">
+    @foreach (var nguoiDung in ViewBag.NguoiDung)
+    {
+        <li>@nguoiDung</li>
+    }
+</ul>
+
+<p>
+    <button id="sendButton">Send</button>
+</p>
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/jshub.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
+<script>
+
+    var phongchoid = @ViewBag.PhongCho.PhongChoId;
+
+    document.getElementById("sendButton").addEventListener("click", function () {
+            axios.post(`/phongcho/NavigateToPage?phongchoid=${phongchoid}`)
+                .then(function (response) {
+                    console.log("Thành công");
+            })
+                .catch(function (error) {
+                    console.log("Lỗi rồi");
+                    console.log(error);
+                    @*window.location.href = "/phongcho/NavigateToPage?phongchoid=@ViewBag.PhongCho.PhongChoId";*@
+            });
+    });
+</script>

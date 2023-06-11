@@ -1,0 +1,317 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Example</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+
+
+        .centerv2 {
+            position: absolute;
+            margin-top: -9.5%;
+            z-index: 1;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: transparent;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            background-size: cover;
+            padding-top: 6px
+        }
+
+
+        .box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 1920px;
+            height: 50px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box p {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-left: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+
+            .box span {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-right: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .containercenter {
+            display: flex;
+        }
+
+        .box-center {
+            width: 100%;
+            height: 588px;
+            background-color: #ccc;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box-3 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1920px;
+            height: 33px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box-3 p {
+                margin: 0;
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        #donghocat1 {
+            background: linear-gradient(to bottom, green, red);
+            background-size: 200% 200%;
+            background-position: top center;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container" id="playerNscore1">
+        @foreach (var player in ViewBag.players)
+        {
+            <div class="box">
+
+                <p>@player.NguoiDung.HoVaTen.ToUpper()</p>
+                <span>@player.TongDiem</span>
+
+            </div>
+        }
+
+    </div>
+    <div class="containercenter">
+        <div class="box-center"><p style="color: white">Đây là phòng @ViewBag.phongdauid</p></div>
+        <div id="donghocat1" style="background-color: aliceblue; width: 35px; margin-right: 3px;">
+        </div>
+    </div>
+
+    <div class="container" style="padding-top: 3px">
+        <div class="box-3">
+            <p>@ViewBag.hovaten.ToUpper()</p>
+        </div>
+        <div id="theloaicauhoi" class="box-3" style="font-style: italic">
+
+        </div>
+    </div>
+    <div class="containercenter">
+        <div id="question-containers" class="box-center" style="background: rgb(68, 68, 68); height: 120px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+
+        </div>
+    </div>
+    <div class="containercenter">
+        <div class="box-center" style="background: rgb(68, 68, 68); height: 58px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+            <input id="answerInput" type="text" name="useranswer" placeholder="Nhập vào đáp án của bạn" style="background-color:transparent; border-color: transparent; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px;  width: 100%; text-align: center">
+        </div>
+    </div>
+
+</body>
+
+</html>
+<!--<h2>Đây là Phòng Đấu--> @*@ViewBag.players.FirstOrDefault().PhongDauID*@
+<!--</h2>
+<h2>Hiện tại là Vòng 1</h2>
+<h3>Id Player: @ViewBag.playerid</h3>-->
+@*<ul id="user-list">
+        @foreach (var player in ViewBag.players)
+        {
+            string idplayer = player.NguoiDung.NguoiDungId.ToString();
+            <li id="idplayer">@player.NguoiDung.HoVaTen, Score: @player.TongDiem</li>
+        }
+    </ul>*@
+@*<h4>Câu hỏi số 1: </h4>*@
+@*<h4 id="timer"></h4>*@
+@*<h4>@ViewBag.cauhoi.NoiDung</h4>*@
+@*<div id="question-container"></div>*@
+@*<div id="timer">10</div>*@
+@*<input type="text" id="answerInput" placeholder="Nhập câu trả lời ở đây" />*@
+<button id="submitButton" type="button" style="display:none">Kiểm tra câu trả lời</button>
+
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/jshub.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
+
+<script>
+
+    var cauhoi = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.cauhoi));
+
+    var solangoi1 = 0;
+
+    var questionIndex = 0;
+    var timeLeft = 3;
+    var cauhoiID;
+    var phongchoid = @ViewBag.phongdauid;
+    function showQuestion() {
+        solangoi1++;
+        // Lấy câu hỏi từ mảng
+        var question = cauhoi[questionIndex];
+        cauhoiID = question.CauHoiId;
+        var thutucauhoi = questionIndex + 1;
+        var theloaicauhoi = "";
+        theloaicauhoi += "<p> CÂU " + thutucauhoi + " - " + question.LinhVuc.TenLinhVuc.toUpperCase();
+        $('#theloaicauhoi').html(theloaicauhoi);
+
+        // Hiển thị câu hỏi và các phương án trả lời trên trang web của bạn
+
+        var questionHtml = "";
+        questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+        questionHtml += question.NoiDung;
+        questionHtml += "</p>";
+        $('#question-containers').html(questionHtml);
+
+        // Lấy thẻ div
+        var divElement = document.getElementById("donghocat1");
+
+        // Thiết lập thời gian và số bước chuyển màu
+        var duration = 10000; // 10 giây
+        var steps = 294; // Số bước chuyển màu
+
+        // Tính toán màu của từng bước
+        var endColor = [0, 128, 0]; // Màu xanh
+        var startColor = [255, 0, 0]; // Màu đỏ
+        var deltaColor = [
+            (endColor[0] - startColor[0]) / steps,
+            (endColor[1] - startColor[1]) / steps,
+            (endColor[2] - startColor[2]) / steps
+        ];
+
+        // Thiết lập background position mới sau mỗi bước
+        var i = 0;
+        var intervalId1 = setInterval(function () {
+            // Tính toán màu mới
+            var red = Math.round(startColor[0] + deltaColor[0] * i);
+            var green = Math.round(startColor[1] + deltaColor[1] * i);
+            var blue = Math.round(startColor[2] + deltaColor[2] * i);
+
+            // Thiết lập màu mới cho div
+            divElement.style.backgroundColor = "rgb(" + red + ", " + green + ", " + blue + ")";
+
+            // Thiết lập background position mới
+            divElement.style.backgroundPosition = "center " + (i * 2) + "px";
+
+            // Tăng giá trị i
+            i++;
+
+            // Kiểm tra nếu đã đạt đến cuối cùng thì dừng lại
+            if (i > steps) {
+                clearInterval(intervalId1);
+            }
+        }, duration / steps);
+
+        //var questionHtml = '<div>';
+        //questionHtml += '<p>' + question.NoiDung + '</p>';
+        //questionHtml += '</div>';
+
+
+        // Thiết lập lại giá trị của biến đếm timeLeft
+        timeLeft = 10;
+
+        // Thiết lập hàm setInterval để cập nhật giá trị của biến đếm timeLeft và hiển thị giá trị đó trên trang web của bạn
+        var intervalId = setInterval(function() {
+            timeLeft--;
+            $('#timer').text(timeLeft);
+            if (timeLeft <= 0) {
+                clearInterval(intervalId);
+                $("#submitButton").click();
+                questionIndex++;
+                if (questionIndex < cauhoi.length) {
+                    setTimeout(showQuestion, 500);
+                } else {
+                    // Hiển thị thông báo hoàn thành vòng 1
+                    @*setTimeout(function () {
+                        window.location.href = "/PhongCho/Vong2?phongdauid=" + @ViewBag.phongdauid;
+                    }, 1);*@
+                    axios.post(`/phongcho/NavigateToPage2?phongchoid=${phongchoid}`)
+                        .then(function (response) {
+                            //làm gì đóoo
+                            console.log("số lần gọi: " + solangoi1);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
+            }
+        }, 500);
+
+
+    }
+
+    $('#submitButton').click(function () {
+        var phongdauid = @ViewBag.phongdauid;
+        var answer = $('#answerInput').val();
+        var playerid = @ViewBag.playerid;
+        var cauhoiid = cauhoiID ;
+        var url = '@Url.Action("CheckAnswer", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, playerid: playerid, cauhoiid: cauhoiid, answer: answer },
+            success: function (result) {
+                // handle success
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+    // Bắt đầu hiển thị câu hỏi đầu tiên
+    showQuestion();
+</script>

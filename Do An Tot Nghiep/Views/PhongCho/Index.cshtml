@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Do_An_Tot_Nghiep.Models.PhongCho>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Phòng Chờ ID
+            </th>
+            <th>
+                Số lượng người chờ hiện tại
+            </th>
+            <th>
+                Thời gian lập
+            </th>
+            <th>
+                Người tạo phòng
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhongChoId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLuongNguoi)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ThoiGianLap)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NguoiDung.HoVaTen)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PhongChoId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.PhongChoId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.PhongChoId">Delete</a>
+                </td>
+                <td>
+                    <form method="post" action="@Url.Action("Join", "PhongCho", new { phongChoId = @item.PhongChoId })">
+                        <button type="submit">Join</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div class="container">
+    <div class="row p-1">
+        <div class="col-1">User @ViewBag.userName</div>
+        <div class="col-5"><input type="text" id="userInput" /></div>
+    </div>
+    <div class="row p-1">
+        <div class="col-1">Message</div>
+        <div class="col-5"><input type="text" class="w-100" id="messageInput" /></div>
+    </div>
+    <div class="row p-1">
+        <div class="col-6 text-end">
+            <input type="button" id="sendButton" value="Send Message" />
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-6">
+            <hr />
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+</div>
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/jshub.js"></script>
+@*<script src="~/js/phongcho2.js"></script>*@

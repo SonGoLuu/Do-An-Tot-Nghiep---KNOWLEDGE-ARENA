@@ -1,0 +1,503 @@
+﻿@{
+    Layout = null;
+    var cnvid = ViewBag.chuongngaivat.ChuongNgaiVatId;
+}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Vòng 2</title>
+    <link rel="stylesheet" href="/css/site.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+
+
+        .centerv2 {
+            position: absolute;
+            margin-top: -9.5%;
+            z-index: 1;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: transparent;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            background-size: cover;
+            padding-top: 6px
+        }
+
+
+        .box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 1920px;
+            height: 50px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box p {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-left: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+
+            .box span {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-right: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .containercenter {
+            display: flex;
+        }
+
+        .box-center {
+            width: 100%;
+            height: 588px;
+            background-color: #ccc;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box-3 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1920px;
+            height: 33px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box-3 p {
+                margin: 0;
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .box .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            border: 2px solid;
+            border-right: 1.5px solid;
+            color: gray;
+            font-size: 13px;
+            font-weight: bold;
+            background-color: gray;
+            text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
+            border-color: gray;
+            /*background-color: purple;*/
+            /*background-color: green;*/
+            /*border-color: white;*/
+            /*text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);*/
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container" id="playerNscore2">
+        @foreach (var player in ViewBag.players)
+        {
+            <div class="box">
+
+                <p>@player.NguoiDung.HoVaTen.ToUpper()</p>
+                <span>@player.TongDiem</span>
+
+            </div>
+        }
+
+    </div>
+    <div class="containercenter" style="position: relative;">
+        <div class="box-center">
+            <div class="containercenter" style="padding-top: 2px; justify-content: center">
+                <div id="ovuong4" class="box" style="width: 480px; height: 290px; background-color: rgb(25,25,25); border: solid 2px white; margin-right: 0px; z-index: 1; opacity: 1; "></div>
+                <div id="ovuong1" class="box" style="width: 480px; height: 290px; background-color: rgb(25,25,25); border: solid 2px white; z-index: 1; opacity: 1; "></div>
+            </div>
+            <div id="hienthinguoibamcnv" class="containercenter" style="padding-top: 0px; justify-content: center">
+                <div id="ovuong3" class="box" style="width: 480px; height: 290px; background-color: rgb(25,25,25); border: solid 2px white; margin-right: 0px; z-index: 1; opacity: 1; "></div>
+                <div id="ovuong2" class="box" style="width: 480px; height: 290px; background-color: rgb(25,25,25); border: solid 2px white; z-index: 1; opacity: 1; "></div>
+                <div id="ovuongcenter" class="box centerv2"
+                     style="width: 480px; height: 290px; background-color: rgb(25,25,25);
+					border: solid 2px white; display: flex; justify-content: center; flex-direction: column;">
+                    <p id="dapancnv" style="padding-right:10px; margin-top: 0px;">
+                        Chướng ngại vật có @ViewBag.chuongngaivat.SoKyTu ký tự
+                    </p>
+                    @foreach (var cauhoi in ViewBag.cauhoi)
+
+                    {
+                        int ids = cauhoi.CauHoiId;
+                        string idcauhoi = ids.ToString();
+                        <div class="choncauhoi" id="@idcauhoi" style="margin-top: 3px; display: flex; justify-content: center; cursor: pointer; pointer-events: none;">
+
+                            @{
+                                string dapan = cauhoi.DapAn;
+                                for (int i = 0; i < dapan.Length; i++)
+                                {
+                                    string text = dapan[i].ToString();
+                                    if (text != " ")
+                                    {
+
+                                        <span style="margin-right: 0px; " class="square">@text.ToUpper()</span>
+                                    }
+                                }
+
+                            }
+
+                        </div>
+                        ids++;
+                    }
+                </div>
+
+                <img src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.chuongngaivat.Anh)}")"
+                     style="position: absolute; margin-top: -19.1%; margin-right: 3px; z-index: 0; width: 960px; height: 580px; border: solid 4px white;">
+
+                @*<div class="box" style="width: 250px; margin-left: 1235px; position: absolute; bottom: 0; margin-bottom:1px">
+                        <p style="text-align:center; margin-right:35px; font-size: 12px">HUỲNH LƯU</p>
+
+                        <span style="text-align:center ;font-size: 12px">CHIECLUOCNGA</span>
+                    </div>*@
+
+            </div>
+        </div>
+
+        <div id="donghocat" style="background-color: green; width: 35px; margin-right: 3px;"></div>
+    </div>
+
+    <div class="container" style="padding-top: 3px">
+        <div class="box-3">
+            <p>@ViewBag.hovaten.ToUpper()</p>
+        </div>
+        <div id="theloaicauhoi" class="box-3" style="font-style: italic">
+
+        </div>
+    </div>
+    <div class="containercenter">
+        <div id="question-containers" class="box-center" style="background: rgb(68, 68, 68); height: 120px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+
+        </div>
+    </div>
+    <div class="containercenter">
+        <div class="box-center" style="background: rgb(68, 68, 68); height: 58px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+            <input id="answerInput" type="text" name="useranswer" placeholder="Nhập vào đáp án của bạn" style="background-color: transparent; border-color: transparent; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px; width: 100%; text-align: center; margin-left: 90px">
+            <button id="btnCNV">TRẢ LỜI CNV</button>
+        </div>
+    </div>
+    <button id="submitButton2" type="button" style="display:none">Kiểm tra câu trả lời</button>
+    <button id="hienthinguoitieptheo" type="button" style="display:none"></button>
+    <button id="hienthiovuong" type="button" style="display:none"></button>
+    <button id="hienthidapan" type="button" style="display:none"></button>
+    <button id="thoigian" type="button" style="display:none"></button>
+    <button id="chonnguoitraloi" type="button" style="display:none"></button>
+    <button id="checkdapancnv" type="button" style="display:none"></button>
+    <button id="randomcauhoi" type="button" style="display:none"></button>
+    <button id="kiemtrasau10s" type="button" style="display:none"></button>
+    <button id="goihamchecklancuoi" type="button" style="display:none"></button>
+    @*<button id="xanhdo" type="button" style="display:none"></button>*@
+</body>
+
+</html>
+
+
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/jshub.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    @*var cauhoi = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.cauhoi));*@
+   /* var luucauhoi = JSON.parse(JSON.stringify(cauhoi));*/
+    var players = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.players));
+    var idlistid;
+    var solangoi = 0;
+
+    var _canCall = true;
+    var _lastCalledTime = Date.now() - 10000; // set to 10 seconds ago
+
+    function hienthichon(id)
+    {
+        var currentTime = Date.now();
+        if (_canCall && (currentTime - _lastCalledTime) >= 10000) {
+            solangoi = id;
+            solangoi++;
+        var currentplayer = @ViewBag.playerid;
+        var idplayer = players[id].NguoiDung.NguoiDungId;
+        if (currentplayer == idplayer)
+        {
+            var questionHtml = "";
+            questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+            questionHtml += "Mời bạn chọn câu hỏi hàng ngang";
+            questionHtml += "</p>";
+            $('#question-containers').html(questionHtml);
+            setTimeout(function () {
+                var idchon = 0;
+                var idcauhoi = 0;
+                $('#submitButton2').trigger('click', [idchon, idcauhoi]);
+            }, 10000);
+            }
+            // End of your code
+            setTimeout(function () {
+                _canCall = true;
+            }, 19500);
+        }
+
+    };
+
+    $('#submitButton2').click(function (event, idchon, idcauhoi) {
+        var phongdauid = @ViewBag.phongdauid;
+        var chonValue = parseInt(idchon);
+        var answer = $('#answerInput').val();
+        var playerid = @ViewBag.playerid;
+        var cauhoiid = parseInt(idcauhoi);
+        var url = '@Url.Action("CheckAnswerVong2", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { chon: chonValue, phongdauid: phongdauid, playerid: playerid, cauhoiid: cauhoiid, answer: answer, solangoi: solangoi },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    $('#randomcauhoi').click(function (event, idhangngang) {
+        var phongdauid = @ViewBag.phongdauid;
+        var chonValue = 0;
+        var answer = idhangngang.toString();
+        var playerid = @ViewBag.playerid;
+        var cauhoiid = 1;
+        var url = '@Url.Action("CheckAnswerVong2", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { chon: chonValue, phongdauid: phongdauid, playerid: playerid, cauhoiid: cauhoiid, answer: answer, solangoi: solangoi },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    $('#hienthinguoitieptheo').click(function (event, idnguoi) {
+        var idnguoitiep = parseInt(idnguoi)
+        hienthichon(idnguoitiep);
+    });
+
+    $('#btnCNV').click(function (event) {
+
+        var phongdauid = @ViewBag.phongdauid;
+        /*var answer = $('#answerInput').val();*/
+        var answer = "";
+        var playerid = @ViewBag.playerid;
+        var chuongngaivatid = @cnvid;
+        var url = '@Url.Action("LuuTraLoiCNV", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, playerid: playerid, chuongngaivatid: chuongngaivatid, answer: answer},
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    $('#kiemtrasau10s').click(function (event) {
+        var phongdauid = @ViewBag.phongdauid;
+        var url = '@Url.Action("CheckSau10s", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid},
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    $('#goihamchecklancuoi').click(function (event, loai) {
+        var phongdauid = @ViewBag.phongdauid;
+        var chonValue = parseInt(loai);
+        var answer = "";
+        var playerid = @ViewBag.playerid;
+        var cauhoiid = 0;
+        var url = '@Url.Action("CheckAnswerVong2", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { chon: chonValue, phongdauid: phongdauid, playerid: playerid, cauhoiid: cauhoiid, answer: answer, solangoi: solangoi },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    function chonnguoitraloicnv(id)
+    {
+        var currentTime = Date.now();
+        if (_canCall && (currentTime - _lastCalledTime) >= 10000) {
+        var currentplayer = @ViewBag.playerid;
+
+            if (id == currentplayer)
+        {
+            var questionHtml = "";
+            questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+            questionHtml += "Mời bạn trả lời chướng ngại vật";
+            questionHtml += "</p>";
+            $('#question-containers').html(questionHtml);
+                setTimeout(function () {
+                    var idcnv = @cnvid;
+                $('#checkdapancnv').trigger('click', [id, idcnv]);
+            }, 10000);
+            }
+            // End of your code
+            setTimeout(function () {
+                _canCall = true;
+            }, 10000);
+        }
+
+    };
+
+    $('#checkdapancnv').click(function (event, id, idcnv) {
+        var phongdauid = @ViewBag.phongdauid;
+        var answer = $('#answerInput').val();
+        var playerid = id;
+        var chuongngaivatid = idcnv;
+        var url = '@Url.Action("CheckDapAnCNV", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, playerid: playerid, chuongngaivatid: chuongngaivatid, answer: answer },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    $('#chonnguoitraloi').click(function (event, nguoidungid) {
+        chonnguoitraloicnv(nguoidungid);
+    });
+
+    $('#hienthiovuong').click(function (event, idcauhoi) {
+        var id = idcauhoi.toString();
+    var divElement = $("#" + id);
+    divElement.find("*").css({
+        backgroundColor: "purple",
+        color: "purple",
+        borderColor: "white"
+    });
+    });
+
+    $('#hienthidapan').click(function (event, idcauhoi, result) {
+        var id = idcauhoi.toString();
+        var res = result.toString();
+        console.log("Thông báo result click: " + res);
+        var divElement = $("#" + id);
+        var ovuong1 = $("#ovuong1");
+        var ovuong2 = $("#ovuong2");
+        var ovuong3 = $("#ovuong3");
+        var ovuong4 = $("#ovuong4");
+        /*var ovuongcenter = $("#ovuongcenter");*/
+        if (res == "0") {
+            divElement.find("*").css({
+                backgroundColor: "red",
+                color: "red",
+                borderColor: "white"
+            });
+        }
+        else
+        {
+            divElement.find("*").css({
+                backgroundColor: "green",
+                color: "white",
+                borderColor: "white"
+            });
+
+            setTimeout(function () {
+                //mở hình ảnh
+                if (ovuong1.css("opacity") == 1) {
+                    ovuong1.css("opacity", 0);
+                }
+                else if (ovuong2.css("opacity") == 1) {
+                    ovuong2.css("opacity", 0);
+                }
+                else if (ovuong3.css("opacity") == 1) {
+                    ovuong3.css("opacity", 0);
+                }
+                else if (ovuong4.css("opacity") == 1) {
+                    ovuong4.css("opacity", 0);
+                }
+            }, 1500);
+
+
+        }
+    });
+
+
+    hienthichon(0);
+</script>
