@@ -32,21 +32,12 @@ connection.on("navigateToPage1", function (pageUrl) {
 var goi1 = 0;
 var goi2 = 0;
 
-//file vong2
-
-
-
+var _canCalla = true;
+var _lastCalledTimea = Date.now() - 10000; // set to 10 seconds ago
 connection.on("UpdateAnswer", function (html1) {
-    //goi1++;
-    //console.log("Đây là update answer");
-    //console.log("Số lần update: " + goi1);
-    //if (goi1 == 4 || goi1 == 8 || goi1 == 12 || goi1 == 16 || goi1 == 20) {
-    //    $('#playerNscore2').empty();
-    //    $('#playerNscore2').html(html1);
-    //}
 
     var currentTime = Date.now();
-    if (_canCall && (currentTime - _lastCalledTime) >= 10000) {
+    if (_canCalla && (currentTime - _lastCalledTimea) >= 10000) {
         goi1++;
         console.log("Đây là update answer");
         console.log("Số lần update: " + goi1);
@@ -57,25 +48,18 @@ connection.on("UpdateAnswer", function (html1) {
 
         // End of your code
         setTimeout(function () {
-            _canCall = true;
+            _canCalla = true;
         }, 19500);
     }
 });
 
 
+var _canCallb = true;
+var _lastCalledTimeb = Date.now() - 10000; // set to 10 seconds ago
 connection.on("UpdateResult", function (html, idcauhoi, result) {
-    //goi2++;
-    //console.log("Đây là update result");
-    //console.log("Số lần update: " + goi2);
-    //if (goi2 == 4 || goi2 == 8 || goi2 == 12 || goi2 == 16 || goi1 == 20) {
-    //    $('#playerNscore2').empty();
-    //    $('#playerNscore2').html(html);
-    //    console.log("Thông báo result signalR " + result);
-    //    $('#hienthidapan').trigger('click', [idcauhoi, result]);
-    //}
 
     var currentTime = Date.now();
-    if (_canCall && (currentTime - _lastCalledTime) >= 10000) {
+    if (_canCallb && (currentTime - _lastCalledTimeb) >= 10000) {
         goi2++;
         console.log("Đây là update result");
         console.log("Số lần update: " + goi2);
@@ -94,99 +78,73 @@ connection.on("UpdateResult", function (html, idcauhoi, result) {
 });
 
 connection.on("UpdateScore2", function (html) {
-    /*goi++;*/
-    //console.log("Đây là update 2");
-    //console.log("Số lần update: " + goi);
-    //console.log(listnc);
-    /*var listnctld = JSON.parse(listnc);*/
     $('#playerNscore2').empty();
     $('#playerNscore2').html(html);
 
 
 });
 
-//connection.on("UpdateScore2", function (html, listnc) {
-//    /*goi++;*/
-//    console.log("Đây là update score2");
-//    //console.log("Số lần update: " + goi);
-//    //console.log(listnc);
-//    var listnctld = JSON.parse(listnc);
-//    $('#playerNscore2').empty();
-//    $('#playerNscore2').html(html);
-    
-    
-//});
+
 
 var updategoi = 0;
+var _canCall = true;
+let canCall = true;
+var _lastCalledTime = Date.now() - 10000; // set to 10 seconds ago
 connection.on("UpdateQuestion", function (cauhoi2, hangngang) {
-    updategoi++;
-    console.log("số lần gọi thời gian:" + updategoi);
-    var cauhoiv2 = JSON.parse(cauhoi2);
-    var hangngangchon = hangngang - 1;
-    var question = cauhoiv2[hangngangchon];
+    if (canCall) {
+        canCall = false;
+        updategoi++;
+        console.log("số lần gọi thời gian:" + updategoi);
+        var cauhoiv2 = JSON.parse(cauhoi2);
+        var hangngangchon = hangngang - 1;
+        var question = cauhoiv2[hangngangchon];
 
-    var idcauhoi = question.CauHoiId;
-    $('#hienthiovuong').trigger('click', idcauhoi);
+        var idcauhoi = question.CauHoiId;
+        $('#hienthiovuong').trigger('click', idcauhoi);
 
-    var theloaicauhoi = "";
-    theloaicauhoi += "<p> CÂU " + "1" + " - " + question.LinhVuc.TenLinhVuc.toUpperCase();
-    $('#theloaicauhoi').html(theloaicauhoi);
+        var theloaicauhoi = "";
+        theloaicauhoi += "<p> HÀNG NGANG " + hangngang + " - " + question.LinhVuc.TenLinhVuc.toUpperCase();
+        theloaicauhoi += "</p>";
+        $('#theloaicauhoi').html(theloaicauhoi);
 
-    var questionHtml = "";
-    questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
-    questionHtml += question.NoiDung;
-    questionHtml += "</p>";
-    $('#question-containers').html(questionHtml);
+        var questionHtml = "";
+        questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+        questionHtml += question.NoiDung;
+        questionHtml += "</p>";
+        $('#question-containers').html(questionHtml);
 
-    var donghocat = document.getElementById("donghocat");
-    // Thêm class "column" vào phần tử
-    donghocat.classList.add("column");
+        var donghocat = document.getElementById("donghocat");
+        // Thêm class "column" vào phần tử
+        donghocat.classList.add("column");
 
-    console.log(donghocat);
+        console.log(donghocat);
+        
 
-    //lấy đáp án
+        //lấy đáp án
 
-    setTimeout(function () {
-        var idchon = 1;
-        var idcauhoi = parseInt(question.CauHoiId);
-        donghocat.classList.remove("column");
-        $('#submitButton2').trigger('click', [idchon, idcauhoi]);
-    }, 10000);
+        setTimeout(function () {
+            var idchon = 1;
+            canCall = true;
+            var idcauhoi = parseInt(question.CauHoiId);
+            donghocat.classList.remove("column");
+            $('#submitButton2').trigger('click', [idchon, idcauhoi]);
+        }, 10000);
 
+    }
+    
 
-    //var currentTime = Date.now();
-    //if (_canCall && (currentTime - _lastCalledTime) >= 10000) {
-    //    setTimeout(function () {
-    //    var idchon = 1;
-    //    var idcauhoi = parseInt(question.CauHoiId);
-    //    donghocat.classList.remove("column");
-    //    $('#submitButton2').trigger('click', [idchon, idcauhoi]);
-    //}, 10000);
-
-    //    // End of your code
-    //    setTimeout(function () {
-    //        _canCall = true;
-    //    }, 19500);
-    //}
 
 });
 
-//connection.on("NextQuestionne", function (solangoi) {
+connection.on("VoHieuHoaBtn", function (idplayer)
+{
+    var id = parseInt(idplayer);
+    $('#vohieuhoabtn').trigger('click', id);
+}
+);
 
-//    console.log("Đây là thông báo log");
-
-//    console.log("Số lần gọi: " + solangoi);
-
-//    $('#hienthinguoitieptheo').trigger('click', solangoi);
-
-//    //if (solangoi == 4 || solangoi > 4) {
-//    //    $('#hienthinguoitieptheo').trigger('click', solangoi - 2);
-//    //}
-//    //else {
-//    //    $('#hienthinguoitieptheo').trigger('click', solangoi);
-//    //}
-
-//});
+var _canCall2 = true;
+var _lastCalledTime2 = Date.now() - 10000; // set to 10 seconds ago
 
 connection.on("NextQuestionne", function (solangoi, list, listchch) {
 
@@ -210,8 +168,31 @@ connection.on("NextQuestionne", function (solangoi, list, listchch) {
             }
             $('#hienthinguoitieptheo').trigger('click', solangoi);
         }
-        else
-        {
+        //else
+        //{
+        //    //var randomIndex = Math.floor(Math.random() * cauhoichuahoi.length);
+        //    //var randomElement = cauhoichuahoi[randomIndex];
+        //    /*var idchon = 0;*/
+        //    /*var idhangngang = randomElement + 1;*/
+        //    var idhangngang = cauhoichuahoi[0] + 1;
+        //    /*console.log("random hàng ngang số: " + idhangngang)*/
+        //    var currentTime = Date.now();
+        //    if (_canCall && (currentTime - _lastCalledTime) >= 10000)
+        //    {
+        //        setTimeout(function () {
+        //            /*donghocat.classList.remove("column");*/
+        //            $('#randomcauhoi').trigger('click', idhangngang);
+        //        }, 10000);
+
+        //        // End of your code
+        //        setTimeout(function () {
+        //            _canCall = true;
+        //        }, 19500);
+        //    }
+
+        //}
+        else {
+            /*$('#hienthinguoitieptheo').trigger('click', 3);*/
             //var randomIndex = Math.floor(Math.random() * cauhoichuahoi.length);
             //var randomElement = cauhoichuahoi[randomIndex];
             /*var idchon = 0;*/
@@ -219,10 +200,10 @@ connection.on("NextQuestionne", function (solangoi, list, listchch) {
             var idhangngang = cauhoichuahoi[0] + 1;
             /*console.log("random hàng ngang số: " + idhangngang)*/
             var currentTime = Date.now();
-            if (_canCall && (currentTime - _lastCalledTime) >= 10000)
+            if (_canCall2 && (currentTime - _lastCalledTime2) >= 10000)
             {
                 setTimeout(function () {
-                    donghocat.classList.remove("column");
+                    /*donghocat.classList.remove("column");*/
                     $('#randomcauhoi').trigger('click', idhangngang);
                 }, 10000);
 
@@ -231,7 +212,6 @@ connection.on("NextQuestionne", function (solangoi, list, listchch) {
                     _canCall = true;
                 }, 19500);
             }
-            
         }
     }
     else
@@ -260,8 +240,23 @@ connection.on("NextQuestionne", function (solangoi, list, listchch) {
         ovuongcenter.style.border = "none";
         ovuongcenter.style.boxShadow = "0px 0px 0px 0px";
 
+        var theloaicauhoi = "";
+        theloaicauhoi += "<p> ĐÃ HẾT CÂU HỎI </p>";
+        $('#theloaicauhoi').html(theloaicauhoi);
+
+        var questionHtml = "";
+        questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+        questionHtml += "Bạn có 10 giây để lựa chọn bấm trả lời chướng ngại vật";
+        questionHtml += "</p>";
+        $('#question-containers').html(questionHtml);
+
+        var donghocat = document.getElementById("donghocat");
+        // Thêm class "column" vào phần tử
+        donghocat.classList.add("column");
+
         const timer = setTimeout(() => {
             $('#kiemtrasau10s').trigger('click');
+            donghocat.classList.remove("column");
             // Xóa đồng hồ đếm thời gian
             clearTimeout(timer);
         }, 10000);
@@ -296,6 +291,11 @@ connection.on("NguoiBamCNV", function (list) {
         div.style.bottom = bottompx.toString() + "px";
         div.style.marginBottom = "1px";
         div.style.border = "solid 2px white";
+
+        if (listcnv[i].TrangThaiNguoiChoi == "loai")
+        {
+            div.style.backgroundColor = "red";
+        }
 
         bottompx += 58;
 
@@ -350,9 +350,54 @@ connection.on("ResutlTraLoiCNV", function (playerid, dapan, checkcnv) {
     }
 });
 
+let canCall2 = true;
 connection.on("GoiCheckLanCuoi", function (loai) {
-    var loaigoi = parseInt(loai);
-    $('#goihamchecklancuoi').trigger('click', loaigoi);
+    if (canCall2) {
+        canCall2 = false;
+        var loaigoi = parseInt(loai);
+        $('#goihamchecklancuoi').trigger('click', loaigoi);
+        setTimeout(function () {
+            canCall2 = true;
+        }, 10000); // Thời gian giữa hai lần gọi hàm là 1000ms
+    }
+    
+});
+
+
+connection.on("DapAnCNV", function (dapancnv) {
+    var divElement = document.getElementById("dapancnv");
+    divElement.style.backgroundColor = "deeppink";
+    divElement.innerHTML = "Đáp án chướng ngại vật: " + dapancnv.toUpperCase();
+});
+
+connection.on("ShowResutl", function (dapancnv) {
+    const choncauhoiDivs = document.querySelectorAll('.choncauhoi');
+    choncauhoiDivs.forEach(div => {
+        const children = div.querySelectorAll('*');
+        children.forEach(child => {
+            child.style.backgroundColor = "purple";
+            child.style.color = 'white';
+            child.style.borderColor = 'white';
+            child.style.opactity = 0.5;
+        });
+    });
+
+    var ovuong1 = document.getElementById("ovuong1");
+    var ovuong2 = document.getElementById("ovuong2");
+    var ovuong3 = document.getElementById("ovuong3");
+    var ovuong4 = document.getElementById("ovuong4");
+    var ovuongcenter = document.getElementById("ovuongcenter");
+    ovuong1.style.opacity = 0;
+    ovuong2.style.opacity = 0;
+    ovuong3.style.opacity = 0;
+    ovuong4.style.opacity = 0;
+    ovuongcenter.style.backgroundColor = "transparent";
+    ovuongcenter.style.border = "none";
+    ovuongcenter.style.boxShadow = "0px 0px 0px 0px";
+
+    var divElement = document.getElementById("dapancnv");
+    divElement.style.backgroundColor = "deeppink";
+    divElement.innerHTML = "Đáp án chướng ngại vật: " + dapancnv.toUpperCase();
 });
 
 connection.start().then(function () {

@@ -276,7 +276,7 @@ namespace Do_An_Tot_Nghiep.Controllers
         List<NguoiChoiTraLoiDung> nctld = new List<NguoiChoiTraLoiDung>();
         private static readonly object _lockObject = new object();
         [HttpPost]
-        public async Task<IActionResult> CheckAnswerVong2(int chon, int phongdauid, int playerid, int cauhoiid, string answer, int solangoi)
+        public async Task<IActionResult> CheckAnswerVong2(int chon, int phongdauid, int playerid, int cauhoiid, string answer, int solangoi, int cnvid)
         {
             var cauhoiv2 = await _context.CauHois
                 .Include(x => x.LinhVuc)
@@ -311,34 +311,40 @@ namespace Do_An_Tot_Nghiep.Controllers
                 string checkcnv = await TraLoiCNV(phongdauid);
                 if (checkcnv == "dung")
                 {
+
                     var getAnswerDung = await _context.TraLoiCNVs.Where(x => x.TrangThaiNguoiChoi == "dung").FirstOrDefaultAsync();
                     var getAnswerSai = await _context.TraLoiCNVs.Where(x => x.TrangThaiNguoiChoi == "sai").ToListAsync();
                     var dung = "dung";
                     var sai = "sai";
                     var dapandung = getAnswerDung.Answer;
                     await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ResutlTraLoiCNV", getAnswerDung.NguoiDungId, dapandung, dung);
+                    //await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("VoHieuHoaBtn", getAnswerDung.NguoiDungId);
                     if (getAnswerSai.Count > 0)
                     {
                         foreach (TraLoiCNV an in getAnswerSai)
                         {
                             var dapansai = an.Answer;
                             await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ResutlTraLoiCNV", an.NguoiDungId, dapansai, sai);
+                            //await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("VoHieuHoaBtn", an.NguoiDungId);
                         }
                     }
-                    await Task.Delay(5000);
-                    var cnvnguoidungid = await _context.TraLoiCNVs
-                                 .Where(x => x.PhongDauId == phongdauid && x.TrangThaiNguoiChoi == "dung")
-                                 .Select(x => x.NguoiDungId).FirstOrDefaultAsync();
+                    string dapancnv = await _context.ChuongNgaiVats.Where(x => x.ChuongNgaiVatId == cnvid)
+                    .Select(x => x.DapAn).FirstOrDefaultAsync();
+                    await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("DapAnCNV", dapancnv);
+                    await Task.Delay(10000);
+                    //var cnvnguoidungid = await _context.TraLoiCNVs
+                    //             .Where(x => x.PhongDauId == phongdauid && x.TrangThaiNguoiChoi == "dung")
+                    //             .Select(x => x.NguoiDungId).FirstOrDefaultAsync();
 
-                    if (cnvnguoidungid == playerid)
-                    {
-                        var ctpdcnv = await _context.ChiTietPhongDaus
-                                .Where(x => x.PhongDauId == phongdauid && x.NguoiDungId == cnvnguoidungid)
-                                .FirstOrDefaultAsync();
-                        ctpdcnv.TongDiem += 50;
-                        var diemmoi = ctpdcnv.TongDiem;
-                        await _context.SaveChangesAsync();
-                    }
+                    //if (cnvnguoidungid == playerid)
+                    //{
+                    //    var ctpdcnv = await _context.ChiTietPhongDaus
+                    //            .Where(x => x.PhongDauId == phongdauid && x.NguoiDungId == cnvnguoidungid)
+                    //            .FirstOrDefaultAsync();
+                    //    ctpdcnv.TongDiem += 50;
+                    //    var diemmoi = ctpdcnv.TongDiem;
+                    //    await _context.SaveChangesAsync();
+                    //}
                     string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
                     await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
                 }
@@ -536,6 +542,8 @@ namespace Do_An_Tot_Nghiep.Controllers
 
                 await Task.Delay(5000);
 
+                //updateScore2(phongdauid);
+
                 var players = await _context.ChiTietPhongDaus
                                     .Include(x => x.NguoiDung)
                                     .Where(x => x.PhongDauId == phongdauid)
@@ -560,6 +568,8 @@ namespace Do_An_Tot_Nghiep.Controllers
                 //var listnc = System.Text.Json.JsonSerializer.Serialize(nctld);
 
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore2", html);
+
+                
 
                 if (check == 0)
                 {
@@ -618,27 +628,7 @@ namespace Do_An_Tot_Nghiep.Controllers
             //nếu chọn ==0
             else if (chon == 0)
             {
-                //nctld.Clear();
-                //// Lấy DbSet của bảng MyTable từ DbContext
-                //var myTable = _context.Set<TraLoiVong2>();
-
-                //// Lấy tất cả các bản ghi trong bảng MyTable
-                //var records = myTable.Where(x => x.PhongDauId == phongdauid).ToList();
-
-                //// Xóa tất cả các bản ghi trong bảng MyTable
-                //myTable.RemoveRange(records);
-                //await Task.Delay(10000);
-
-                //var xoa = await _context.TraLoiVong2s.Where(x => x.PhongDauId == phongdauid).ToListAsync();
-                //if(playerid == 1)
-                //{
-                //    if (xoa.Count > 0)
-                //    {
-                //        _context.RemoveRange(xoa);
-
-                //        await _context.SaveChangesAsync();
-                //    }
-                //}   
+                
                 try
                 {
                     lock (_lockObject)
@@ -652,76 +642,92 @@ namespace Do_An_Tot_Nghiep.Controllers
                     // Xử lý lỗi
                 }
 
-
-                //if (playerid == 2)
-                //{
-                //    _context.TraLoiVong2s.RemoveRange(_context.TraLoiVong2s);
-                //    await _context.SaveChangesAsync();
-                //}    
-                
-                // Lưu thay đổi vào database
-                //await _context.SaveChangesAsync();
-
                 int hangngang = Convert.ToInt32(answer);
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang);
-                
+
+                //if (answer != null || answer != "")
+                //{
+                //    if (int.TryParse(answer, out _))
+                //    {
+                //        int hangngang = Convert.ToInt32(answer);
+                //        int index = hangngang - 1;
+                //        var cauhois = await _context.CauHois.Where(x => x.ChuongNgaiVatId == cnvid).ToListAsync();
+                //        var idcauhoicanlay = cauhois[index].CauHoiId;
+                //        var checkdahoichua = await _context.CauDaHois.Where(x => x.PhongDauId == phongdauid).FirstOrDefaultAsync(x=> x.CauHoiId == idcauhoicanlay);
+                //        if(checkdahoichua != null)
+                //        {
+                //            var cdhs = await _context.CauDaHois.Where(x => x.PhongDauId == phongdauid).ToListAsync();
+
+                //            var randomcauhoi = cauhois.FirstOrDefault(x => !cdhs.Any(c => c.CauHoiId == x.CauHoiId));
+
+                //            if (randomcauhoi != null)
+                //            {
+                //                int index1 = cauhois.IndexOf(randomcauhoi);
+                //                int hangngang1 = index1 + 1;
+                //                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang1);
+                //            }
+                //        }    
+                //        else
+                //        {
+                //            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang);
+                //        }
+                //    }  
+                //    else
+                //    {
+                //        var cauhois = await _context.CauHois.Where(x => x.ChuongNgaiVatId == cnvid).ToListAsync();
+
+                //        var cdhs = await _context.CauDaHois.Where(x => x.PhongDauId == phongdauid).ToListAsync();
+
+                //        var randomcauhoi = cauhois.FirstOrDefault(x => !cdhs.Any(c => c.CauHoiId == x.CauHoiId));
+
+                //        if(randomcauhoi != null)
+                //        {
+                //            int index = cauhois.IndexOf(randomcauhoi);
+                //            int hangngang = index + 1;
+                //            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang);
+                //        }    
+                //    }    
+                //}    
+                //else
+                //{
+                //    var cauhois = await _context.CauHois.Where(x => x.ChuongNgaiVatId == cnvid).ToListAsync();
+
+                //    var cdhs = await _context.CauDaHois.Where(x => x.PhongDauId == phongdauid).ToListAsync();
+
+                //    var randomcauhoi = cauhois.Where(x => !cdhs.Any(c => c.CauHoiId == x.CauHoiId)).FirstOrDefault();
+
+                //    if (randomcauhoi != null)
+                //    {
+                //        int index = cauhois.IndexOf(randomcauhoi);
+                //        int hangngang = index + 1;
+                //        await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang);
+                //    }
+                //}    
+
             }
 
             //else khác
             else if (chon == 3)
             {
-                //var getAnswerDung = await _context.TraLoiCNVs.Where(x => x.TrangThaiNguoiChoi == "dung").FirstOrDefaultAsync();
-                //var getAnswerSai = await _context.TraLoiCNVs.Where(x => x.TrangThaiNguoiChoi == "sai").ToListAsync();
-                //var dung = "dung";
-                //var sai = "sai";
-                //var dapandung = getAnswerDung.Answer;
-                //await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ResutlTraLoiCNV", getAnswerDung.NguoiDungId, dapandung, dung);
-                //if (getAnswerSai.Count > 0)
-                //{
-                //    foreach (TraLoiCNV an in getAnswerSai)
-                //    {
-                //        var dapansai = an.Answer;
-                //        await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ResutlTraLoiCNV", an.NguoiDungId, dapansai, sai);
-                //    }
-                //}
-                //await Task.Delay(5000);
-                var cnvnguoidungid = await _context.TraLoiCNVs
-                             .Where(x => x.PhongDauId == phongdauid && x.TrangThaiNguoiChoi == "dung")
-                             .Select(x => x.NguoiDungId).FirstOrDefaultAsync();
-
-                if (cnvnguoidungid == playerid)
-                {
-                    var ctpdcnv = await _context.ChiTietPhongDaus
-                            .Where(x => x.PhongDauId == phongdauid && x.NguoiDungId == cnvnguoidungid)
-                            .FirstOrDefaultAsync();
-                    ctpdcnv.TongDiem += 50;
-                    var diemmoi = ctpdcnv.TongDiem;
-                    await _context.SaveChangesAsync();
-                }
-                //string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
-                //await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
+                
+                await Task.Delay(10000);
+                string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
             }
             else if (chon == 4)
             {
-                //var getAnswerSai = await _context.TraLoiCNVs.Where(x => x.TrangThaiNguoiChoi == "sai").ToListAsync();
-                //foreach (TraLoiCNV an in getAnswerSai)
-                //{
-                //    var dapansai = an.Answer;
-                //    var sai = "sai";
-                //    await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ResutlTraLoiCNV", an.NguoiDungId, dapansai, sai);
-                //    an.TrangThaiNguoiChoi = "loai";
-                //    await _context.SaveChangesAsync();
-                //    string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
-                //    await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
-                //}
-                //string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
-                //await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
+                
+                await Task.Delay(10000);
+                string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
 
             }
             else if (chon == 5)
             {
-                //string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
-                //await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
+                
+                await Task.Delay(10000);
+                string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
             }
             return Ok();
         }
@@ -1116,9 +1122,38 @@ namespace Do_An_Tot_Nghiep.Controllers
                 var list = System.Text.Json.JsonSerializer.Serialize(listcnv);
 
             await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("NguoiBamCNV", list);
-               
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("VoHieuHoaBtn", playerid);
+
             return Ok();
         }
+
+        //public async void updateScore2(int phongdauid)
+        //{
+        //    var players = await _context.ChiTietPhongDaus
+        //                            .Include(x => x.NguoiDung)
+        //                            .Where(x => x.PhongDauId == phongdauid)
+        //                            .OrderBy(x => x.NguoiDungId)
+        //                            .Select(x => new PlayerScore
+        //                            {
+        //                                Name = x.NguoiDung.HoVaTen,
+        //                                Score = (int)x.TongDiem,
+        //                                Id = (int)x.NguoiDungId
+        //                            })
+        //                            .ToListAsync();
+        //    var html = "";
+        //    foreach (var player in players)
+        //    {
+        //        //html += "<li>" + player.Name + ", Score: " + player.Score + "</li>";
+        //        html += "<div class=\"box\" id=\"player" + player.Id + "\">";
+        //        html += "<p>" + player.Name.ToUpper() + "</p>";
+        //        html += "<span>" + player.Score + "</span>";
+        //        html += "</div>";
+        //    }
+
+        //    //var listnc = System.Text.Json.JsonSerializer.Serialize(nctld);
+
+        //    await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore2", html);
+        //}
 
 
         [HttpPost]
@@ -1131,10 +1166,53 @@ namespace Do_An_Tot_Nghiep.Controllers
             var dapan = await _context.ChuongNgaiVats.Where(x => x.ChuongNgaiVatId == chuongngaivatid).Select(x => x.DapAn).FirstOrDefaultAsync();
             if(dapan == answer)
             {
+                string dapancnv = await _context.ChuongNgaiVats.Where(x => x.ChuongNgaiVatId == chuongngaivatid)
+                    .Select(x => x.DapAn).FirstOrDefaultAsync();
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ShowResutl", dapancnv);
+
+                var cnvnguoidungid = await _context.TraLoiCNVs
+                                 .Where(x => x.PhongDauId == phongdauid && x.TrangThaiNguoiChoi == "dung")
+                                 .Select(x => x.NguoiDungId).FirstOrDefaultAsync();
+
+                if (cnvnguoidungid == playerid)
+                {
+                    var ctpdcnv = await _context.ChiTietPhongDaus
+                            .Where(x => x.PhongDauId == phongdauid && x.NguoiDungId == cnvnguoidungid)
+                            .FirstOrDefaultAsync();
+                    ctpdcnv.TongDiem += 50;
+                    var diemmoi = ctpdcnv.TongDiem;
+                    await _context.SaveChangesAsync();
+                }
+
                 updatetrangthaicnv.TrangThaiNguoiChoi = "dung";
                 await _context.SaveChangesAsync();
+
+
+                var players = await _context.ChiTietPhongDaus
+                                    .Include(x => x.NguoiDung)
+                                    .Where(x => x.PhongDauId == phongdauid)
+                                    .OrderBy(x => x.NguoiDungId)
+                                    .Select(x => new PlayerScore
+                                    {
+                                        Name = x.NguoiDung.HoVaTen,
+                                        Score = (int)x.TongDiem,
+                                        Id = (int)x.NguoiDungId
+                                    })
+                                    .ToListAsync();
+                var html = "";
+                foreach (var player in players)
+                {
+                    //html += "<li>" + player.Name + ", Score: " + player.Score + "</li>";
+                    html += "<div class=\"box\" id=\"player" + player.Id + "\">";
+                    html += "<p>" + player.Name.ToUpper() + "</p>";
+                    html += "<span>" + player.Score + "</span>";
+                    html += "</div>";
+                }
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore2", html);
+
                 var dung = "dung";
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ResutlTraLoiCNV", playerid, answer, dung);
+
             }    
             else
             {
@@ -1158,7 +1236,7 @@ namespace Do_An_Tot_Nghiep.Controllers
                     if (cnv.TrangThaiNguoiChoi == "chuatraloi")
                     {
                         await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ChonNguoiTraLoiCNV", cnv.NguoiDungId);
-                        await Task.Delay(20000);
+                        await Task.Delay(15000);
                         //await _context.SaveChangesAsync();
                         var cnvcopy = await _context.TraLoiCNVs
                             .Where(x => x.PhongDauId == phongdauid && x.NguoiDungId == cnv.NguoiDungId)
@@ -1175,8 +1253,10 @@ namespace Do_An_Tot_Nghiep.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CheckSau10s(int phongdauid)
+        public async Task<ActionResult> CheckSau10s(int phongdauid, int cnvid)
         {
+            string dapancnv = await _context.ChuongNgaiVats.Where(x => x.ChuongNgaiVatId == cnvid)
+                    .Select(x => x.DapAn).FirstOrDefaultAsync();
             int loai;
             var bamcnv = await _context.TraLoiCNVs
                 .Where(x => x.PhongDauId == phongdauid && x.TrangThaiNguoiChoi == "chuatraloi").ToListAsync();
@@ -1185,24 +1265,28 @@ namespace Do_An_Tot_Nghiep.Controllers
                 foreach (TraLoiCNV cnv in bamcnv)
                 {
                     await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ChonNguoiTraLoiCNV", cnv.NguoiDungId);
-                    await Task.Delay(20000);
+                    await Task.Delay(10000);
+
                     //await _context.SaveChangesAsync();
                     var cnvcopy = await _context.TraLoiCNVs
                         .Where(x => x.PhongDauId == phongdauid && x.NguoiDungId == cnv.NguoiDungId)
                         .Select(x => x.TrangThaiNguoiChoi).FirstOrDefaultAsync();
                     if (cnvcopy == "dung")
                     {
+                        await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("DapAnCNV", dapancnv);
                         loai = 3;
                         await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("GoiCheckLanCuoi", loai);
                         return Ok();
                     }
                 }
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("DapAnCNV", dapancnv);
                 loai = 4;
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("GoiCheckLanCuoi", loai);
                 return Ok();
             }    
             else
             {
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("DapAnCNV", dapancnv);
                 loai = 5;
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("GoiCheckLanCuoi", loai);
                 return Ok();
