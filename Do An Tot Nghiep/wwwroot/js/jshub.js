@@ -400,6 +400,86 @@ connection.on("ShowResutl", function (dapancnv) {
     divElement.innerHTML = "Đáp án chướng ngại vật: " + dapancnv.toUpperCase();
 });
 
+//vòng 3
+var goi3 = 0;
+var goi4 = 0;
+
+var _canCall3 = true;
+var _lastCalledTime3 = Date.now() - 10000; // set to 10 seconds ago
+
+connection.on("UpdateAnswer3", function (html1) {
+
+    var currentTime = Date.now();
+    if (_canCall3 && (currentTime - _lastCalledTime3) >= 10000) {
+        goi3++;
+        console.log("Đây là update answer");
+        console.log("Số lần update: " + goi3);
+        if (goi3 == 4 || goi3 == 8 || goi3 == 12 || goi3 == 16 || goi3 == 20) {
+            $('#playerNscore3').empty();
+            $('#playerNscore3').html(html1);
+        }
+
+        // End of your code
+        setTimeout(function () {
+            _canCall3 = true;
+        }, 19500);
+    }
+});
+
+
+var _canCall4 = true;
+var _lastCalledTime4 = Date.now() - 10000; // set to 10 seconds ago
+connection.on("UpdateResult3", function (html) {
+
+    var currentTime = Date.now();
+    if (_canCall4 && (currentTime - _lastCalledTime4) >= 10000) {
+        goi4++;
+        console.log("Đây là update result");
+        console.log("Số lần update: " + goi4);
+        if (goi4 == 4 || goi4 == 8 || goi4 == 12 || goi4 == 16 || goi4 == 20) {
+            $('#playerNscore3').empty();
+            $('#playerNscore3').html(html);           
+        }
+
+        // End of your code
+        setTimeout(function () {
+            _canCall = true;
+        }, 19500);
+    }
+});
+
+connection.on("UpdateScore3", function (html) {
+    $('#playerNscore3').empty();
+    $('#playerNscore3').html(html);
+
+
+});
+
+
+var _canCallv3 = true;
+let canCallv3 = true;
+var _lastCalledTimev3 = Date.now() - 10000; // set to 10 seconds ago
+connection.on("NextQuestionV3", function (slg) {
+    if (canCallv3)
+    {
+        canCallv3 = false;
+        if (slg < 4)
+        {
+            $('#hienthicauhoitieptheo').trigger('click', slg);
+        }
+        else
+        {
+            //var url = '@Url.Action("Index", "PhongCho", new { scheme = Request.Scheme })';
+            //window.location.assign(url);
+        }
+        setTimeout(function () {
+            canCallv3 = true;
+        }, 10000);
+
+    }
+    
+});
+
 connection.start().then(function () {
     //dosomething
 }).catch(function (err) {

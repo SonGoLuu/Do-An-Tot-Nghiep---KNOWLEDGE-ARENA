@@ -12,6 +12,17 @@ for details on configuring this project to bundle and minify static web assets. 
         background-color: red;
     }
 }
+@keyframes column2 {
+    0% {
+        height: 0px;
+        background-color: red;
+    }
+
+    100% {
+        height: 588px;
+        background-color: red;
+    }
+}
 
 /* Sử dụng animation */
 .column {
@@ -29,6 +40,25 @@ for details on configuring this project to bundle and minify static web assets. 
         left: 0;
         width: 1532.5px;
         height: 600px;
+        background-color: green;
+        z-index: -2;
+    }
+
+.column2 {
+    background-color: green;
+    animation-name: column;
+    animation-duration: 30s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+}
+
+    .column2::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1532.5px;
+        height: 650px;
         background-color: green;
         z-index: -2;
     }

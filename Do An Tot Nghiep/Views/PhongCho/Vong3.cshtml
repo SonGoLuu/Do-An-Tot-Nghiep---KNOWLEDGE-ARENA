@@ -1,0 +1,309 @@
+﻿@{
+    Layout = null;
+
+}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Vòng 3</title>
+    <link rel="stylesheet" href="/css/site.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+
+
+        .centerv2 {
+            position: absolute;
+            margin-top: -9.5%;
+            z-index: 1;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: transparent;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            background-size: cover;
+            padding-top: 6px
+        }
+
+
+        .box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 1920px;
+            height: 50px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box p {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-left: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+
+            .box span {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-right: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .containercenter {
+            display: flex;
+        }
+
+        .box-center {
+            width: 100%;
+            height: 588px;
+            background-color: #ccc;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box-3 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1920px;
+            height: 33px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box-3 p {
+                margin: 0;
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .box .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            border: 2px solid;
+            border-right: 1.5px solid;
+            color: gray;
+            font-size: 13px;
+            font-weight: bold;
+            background-color: gray;
+            text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
+            border-color: gray;
+            /*background-color: purple;*/
+            /*background-color: green;*/
+            /*border-color: white;*/
+            /*text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);*/
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container" id="playerNscore3">
+        @foreach (var player in ViewBag.players)
+        {
+            <div class="box">
+
+                <p>@player.NguoiDung.HoVaTen.ToUpper()</p>
+                <span>@player.TongDiem</span>
+
+            </div>
+        }
+
+    </div>
+    <div class="containercenter" style="">
+        <div id="hienthianh" class="box-center" style="text-align: center;">
+            <img id="hinhanhne" src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.cauhoi[0].Anh)}")"
+                 style="width: 960px; height: 580px; border: solid 4px white;">
+        </div>
+        <div id="donghocat" style="background-color: green; width: 35px; margin-right: 3px;"></div>
+
+    </div>
+
+    <div class="container" style="padding-top: 3px">
+        <div class="box-3">
+            <p>@ViewBag.hovaten.ToUpper()</p>
+        </div>
+        <div id="theloaicauhoi" class="box-3" style="font-style: italic">
+
+        </div>
+    </div>
+    <div class="containercenter">
+        <div id="question-containers" class="box-center" style="background: rgb(68, 68, 68); height: 120px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+
+        </div>
+    </div>
+    <div class="containercenter">
+        <div class="box-center" style="background: rgb(68, 68, 68); height: 58px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+            <input id="answerInput" type="text" name="useranswer" placeholder="Nhập vào đáp án của bạn" style="background-color: transparent; border-color: transparent; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px; width: 100%; text-align: center;">
+        </div>
+    </div>
+    <button id="submitButton3" type="button" style="display:none">Kiểm tra câu trả lời</button>
+    <button id="hienthicauhoitieptheo" type="button" style="display:none"></button>
+    @*<button id="hienthiovuong" type="button" style="display:none"></button>
+    <button id="hienthidapan" type="button" style="display:none"></button>
+    <button id="thoigian" type="button" style="display:none"></button>
+    <button id="chonnguoitraloi" type="button" style="display:none"></button>
+    <button id="checkdapancnv" type="button" style="display:none"></button>
+    <button id="randomcauhoi" type="button" style="display:none"></button>
+    <button id="kiemtrasau10s" type="button" style="display:none"></button>
+    <button id="goihamchecklancuoi" type="button" style="display:none"></button>
+    <button id="vohieuhoabtn" type="button" style="display:none"></button>*@
+    @*<button id="xanhdo" type="button" style="display:none"></button>*@
+</body>
+
+</html>
+
+
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/jshub.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    var players = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.players));
+    var cauhois = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.cauhoi));
+    var idlistid;
+    var solangoi = 0;
+
+    var time1;
+    var time2 = 0.0;
+    
+
+    var _canCall = true;
+    var _lastCalledTime = Date.now() - 10000; // set to 10 seconds ago
+
+    function hienthicauhoi(slg)
+    {
+        var currentTime = Date.now();
+        time1 = Date.now();
+        if (_canCall && (currentTime - _lastCalledTime) >= 10000) {
+            solangoi = slg;
+            solangoi++;
+
+            var question = cauhois[slg];
+
+            $("#hinhanhne").attr("src", "data:image/png;base64," + question.Anh);
+
+
+            var theloaicauhoi = "";
+            theloaicauhoi += "<p> Câu " + solangoi + " - " + question.LinhVuc.TenLinhVuc.toUpperCase();
+            theloaicauhoi += "</p>";
+            $('#theloaicauhoi').html(theloaicauhoi);
+
+            var questionHtml = "";
+            questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+            questionHtml += question.NoiDung;
+            questionHtml += "</p>";
+            $('#question-containers').html(questionHtml);
+
+            var donghocat = document.getElementById("donghocat");
+            // Thêm class "column" vào phần tử
+            donghocat.classList.add("column2");
+
+            console.log(donghocat);
+
+
+            //lấy đáp án
+
+            setTimeout(function () {
+                canCall = true;
+                var idcauhoi = parseInt(question.CauHoiId);
+                donghocat.classList.remove("column2");
+                if (time2 == 0.0)
+                {
+                    time2 = 30.0;
+                }
+                var time22 = time2;
+                time2 = 0.0;
+                $('#submitButton3').trigger('click', [idcauhoi, time22]);
+            }, 30000);
+            // End of your code
+            setTimeout(function () {
+                _canCall = true;
+            }, 39500);
+        }
+
+    };
+
+
+    $('#submitButton3').click(function (event, idcauhoi, time) {
+        var phongdauid = @ViewBag.phongdauid;
+        var answer = $('#answerInput').val();
+        var playerid = @ViewBag.playerid;
+        var cauhoiid = parseInt(idcauhoi);
+        var url = '@Url.Action("CheckAnswerVong3", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, playerid: playerid, cauhoiid: cauhoiid, answer: answer, time: time, solangoi: solangoi },
+            success: function (result) {
+                console.log("gọi checkanswer3 thành công");
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+
+    $('#hienthicauhoitieptheo').click(function (event, slg) {
+        var indexcauhoi = parseInt(slg)
+        hienthicauhoi(indexcauhoi);
+    });
+
+    // Lấy thẻ input có id là answerInput
+    var answerInput = document.getElementById('answerInput');
+
+    // Đăng ký event listener cho thẻ input
+    answerInput.addEventListener('keydown', function (event) {
+        // Kiểm tra xem phím được nhấn có phải là phím Enter không
+        if (event.keyCode === 13) {
+            time2 = (Date.now() - time1)/1000;
+        }
+    });
+
+    hienthicauhoi(0);
+
+</script>

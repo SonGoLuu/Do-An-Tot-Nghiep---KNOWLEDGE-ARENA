@@ -31,6 +31,7 @@ namespace Do_An_Tot_Nghiep.Models
         public virtual DbSet<TraLoiCNV> TraLoiCNVs { get; set; }
         public virtual DbSet<CauDaHoi> CauDaHois { get; set; }
         public virtual DbSet<TraLoiVong2> TraLoiVong2s { get; set; }
+        public virtual DbSet<TraLoiVong3> TraLoiVong3s { get; set; }
         public virtual DbSet<XepHang> XepHangs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -302,6 +303,28 @@ namespace Do_An_Tot_Nghiep.Models
                 entity.Property(e => e.Answer).HasColumnName("Answer");
 
                 entity.Property(e => e.Result).HasColumnName("Result");
+
+                entity.Property(e => e.PhongDauId).HasColumnName("PhongDauID");
+
+                entity.HasKey(e => e.Id);
+
+            });
+
+            modelBuilder.Entity<TraLoiVong3>(entity =>
+            {
+                entity.ToTable("TraLoiVong3");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.PlayerId).HasColumnName("PlayerID");
+
+                entity.Property(e => e.Answer).HasColumnName("Answer");
+
+                entity.Property(e => e.ThoiGian).HasColumnName("ThoiGian");
+
+                entity.Property(e => e.Result).HasColumnName("Result");
+
+                entity.Property(e => e.PhongDauId).HasColumnName("PhongDauID");
 
                 entity.HasKey(e => e.Id);
 

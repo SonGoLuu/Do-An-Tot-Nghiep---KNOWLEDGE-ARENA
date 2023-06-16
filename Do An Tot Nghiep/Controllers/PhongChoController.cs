@@ -230,6 +230,255 @@ namespace Do_An_Tot_Nghiep.Controllers
             return Ok();
         }
 
+        //vòng 3
+
+        public async Task<IActionResult> Vong3(int phongdauid)
+        {
+            var user = _userManager.GetUserName(User);
+            var IdUser = await _context.TaiKhoans.Include(x => x.NguoiDung)
+                            .Where(x => x.TenDangNhap == user)
+                            .Select(x => x.NguoiDungId)
+                            .FirstOrDefaultAsync();
+            ViewBag.playerid = IdUser;
+            var HoVaTen = await _context.TaiKhoans.Include(x => x.NguoiDung)
+                            .Where(x => x.TenDangNhap == user)
+                            .Select(x => x.NguoiDung.HoVaTen)
+                            .FirstOrDefaultAsync();
+            ViewBag.hovaten = HoVaTen;
+            var players = await _context.ChiTietPhongDaus
+                .Include(p => p.NguoiDung)
+                .Where(p => p.PhongDauId == phongdauid)
+                .ToListAsync();
+            ViewBag.players = players;
+
+            //lấy bộ câu hỏi random
+            var cauhoi = await _context.CauHois
+                .Include(x => x.LinhVuc)
+                .Where(x => x.VongCauHoi == 3)
+                .Take(4)
+                .ToListAsync();
+            ViewBag.cauhoi = cauhoi;
+
+            ViewBag.phongdauid = phongdauid;
+
+            Solangoi.Ids.Clear();
+
+            return View();
+        }
+
+        private static readonly object _lockObject2 = new object();
+        [HttpPost]
+        public async Task<IActionResult> CheckAnswerVong3(int phongdauid, int playerid, int cauhoiid, string answer, double time, int solangoi)
+        {
+
+
+            var ctpd = await _context.ChiTietPhongDaus
+                        .Where(x => x.NguoiDungId == playerid && x.PhongDauId == phongdauid)
+                        .FirstOrDefaultAsync();
+            var cauhoi = await _context.CauHois
+                            .Where(x => x.CauHoiId == cauhoiid)
+                            .FirstOrDefaultAsync();
+
+
+            TraLoiVong3 tlv3 = new TraLoiVong3();
+            tlv3.PlayerId = playerid;
+            tlv3.PhongDauId = phongdauid;
+            if (answer != null)
+            {
+                if (answer == "")
+                {
+                    tlv3.Answer = "chưa trả lời";
+                }
+                else
+                {
+                    tlv3.Answer = answer;
+                }
+            }
+            else
+            {
+                tlv3.Answer = "chưa trả lời";
+            }
+
+            if (answer == cauhoi.DapAn)
+            {
+                tlv3.Result = 1;
+            }
+            else
+            {
+                tlv3.Result = 0;
+            }
+            tlv3.Id = 0;
+            tlv3.ThoiGian = time;
+            
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var checktrungid = _context.TraLoiVong3s.Where(x => x.PlayerId == playerid).FirstOrDefault();
+                    if (checktrungid != null)
+                    {
+                        // Nếu đối tượng đã tồn tại, không làm gì cả
+                    }
+                    else
+                    {
+                        _context.Add(tlv3);
+                        await _context.SaveChangesAsync();
+
+                    }
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    // Xử lý lỗi nếu có
+                }
+            }
+
+            var answerv3 = _context.TraLoiVong3s.Where(x => x.PhongDauId == phongdauid).OrderBy(x => x.PlayerId).ToList();
+            //hiển thị answer
+            var html2 = "";
+            int vithu = 0;
+            foreach (var a in answerv3)
+            {
+                vithu++;
+                if (a.Result == 1)
+                {
+                    html2 += "<div class=\"box\" id=\"player" + a.PlayerId + "\">";
+                }
+                else
+                {
+                    html2 += "<div class=\"box\" id=\"player" + a.PlayerId + "\">";
+                }
+                if (a.Answer != "")
+                {
+                    html2 += "<p>" + a.Answer.ToUpper() + "</p>";
+                }
+                else
+                {
+                    html2 += "<p>" + "CHƯA TRẢ LỜI" + "</p>";
+                }
+                html2 += "<span> " + vithu.ToString() + " - "  + a.ThoiGian.ToString() + "s </span>";
+                html2 += "</div>";
+            }
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateAnswer3", html2);
+
+            await Task.Delay(3000);
+
+            var answerv22 = _context.TraLoiVong3s.Where(x => x.PhongDauId == phongdauid).OrderBy(x => x.PlayerId).ToList();
+
+
+            //hienthiketqua
+            var html1 = "";
+
+            foreach (var a in answerv22)
+            {
+                if (a.Result == 1)
+                {
+                    html1 += "<div class=\"box\" id=\"player" + a.PlayerId + "\" style=\"background: rgb(35, 147, 66);\">";
+                }
+                else
+                {
+                    html1 += "<div class=\"box\" id=\"player" + a.PlayerId + "\" style=\"background: rgb(229, 61, 48);\">";
+                }
+                if (a.Answer != "")
+                {
+                    html1 += "<p>" + a.Answer.ToUpper() + "</p>";
+                }
+                else
+                {
+                    html1 += "<p>" + "CHƯA TRẢ LỜI" + "</p>";
+                }
+                html1 += "</div>";
+            }
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateResult3", html1);
+
+            //cộng điểm
+            var ctlv3 = await _context.TraLoiVong3s.Where(x => x.PlayerId == playerid).FirstOrDefaultAsync();
+            var ctlv3dung = await _context.TraLoiVong3s.Where(x => x.Result == 1).OrderBy(x => x.ThoiGian).ToListAsync();
+            if (ctlv3dung.Count > 0)
+            {
+                if (ctlv3.Result == 1)
+                {
+                    int index = ctlv3dung.IndexOf(ctlv3);
+                    if (index >= 0)
+                    {
+                        if (index == 0)
+                        {
+                            ctpd.TongDiem += 40;
+                        }
+                        else if (index == 1)
+                        {
+                            ctpd.TongDiem += 30;
+                        }
+                        else if (index == 2)
+                        {
+                            ctpd.TongDiem += 20;
+                        }
+                        else if (index == 3)
+                        {
+                            ctpd.TongDiem += 10;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+
+            await Task.Delay(5000);
+
+            //update điểm
+
+            var players = await _context.ChiTietPhongDaus
+                                .Include(x => x.NguoiDung)
+                                .Where(x => x.PhongDauId == phongdauid)
+                                .OrderBy(x => x.NguoiDungId)
+                                .Select(x => new PlayerScore
+                                {
+                                    Name = x.NguoiDung.HoVaTen,
+                                    Score = (int)x.TongDiem,
+                                    Id = (int)x.NguoiDungId
+                                })
+                                .ToListAsync();
+            var html = "";
+            foreach (var player in players)
+            {
+                //html += "<li>" + player.Name + ", Score: " + player.Score + "</li>";
+                html += "<div class=\"box\" id=\"player" + player.Id + "\">";
+                html += "<p>" + player.Name.ToUpper() + "</p>";
+                html += "<span>" + player.Score + "</span>";
+                html += "</div>";
+            }
+
+            //var listnc = System.Text.Json.JsonSerializer.Serialize(nctld);
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore3", html);
+
+            await Task.Delay(3000);
+
+
+            //xóa câu trả lời v3
+            try
+            {
+                lock (_lockObject2)
+                {
+                    _context.TraLoiVong3s.RemoveRange(_context.TraLoiVong3s);
+                    _context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi
+            }
+
+            //gọi tới câu hỏi tiếp theo cauhoiv3, solangoi
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("NextQuestionV3", solangoi);
+
+            return Ok();
+        }
+
         //Vòng 2
 
         public async Task<IActionResult> Vong2(int phongdauid)
@@ -264,13 +513,9 @@ namespace Do_An_Tot_Nghiep.Controllers
 
             Solangoi.Ids.Clear();
 
-            //await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("NextQuestion", 0);
-
             return View();
         }
 
-        //Check Answer
-        //Dictionary<int, List<int>> usedQuestionsByPlayer = new Dictionary<int, List<int>>();
 
         private static DateTime lastSignalRSendTime = DateTime.MinValue;
         List<NguoiChoiTraLoiDung> nctld = new List<NguoiChoiTraLoiDung>();
@@ -299,8 +544,7 @@ namespace Do_An_Tot_Nghiep.Controllers
                     if (listcauhoi != null)
                     {
                         check = 0;
-                        //usedQuestions.Add(listcauhoi.CauHoiId);
-                        //usedQuestionsByPlayer[playerid] = usedQuestions;
+
                         solan sl = new solan();
                         sl.idcauhoiid = cauhoiid;
                         Solangoi.Ids.Add(sl);
@@ -318,7 +562,6 @@ namespace Do_An_Tot_Nghiep.Controllers
                     var sai = "sai";
                     var dapandung = getAnswerDung.Answer;
                     await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ResutlTraLoiCNV", getAnswerDung.NguoiDungId, dapandung, dung);
-                    //await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("VoHieuHoaBtn", getAnswerDung.NguoiDungId);
                     if (getAnswerSai.Count > 0)
                     {
                         foreach (TraLoiCNV an in getAnswerSai)
@@ -332,20 +575,9 @@ namespace Do_An_Tot_Nghiep.Controllers
                     .Select(x => x.DapAn).FirstOrDefaultAsync();
                     await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("DapAnCNV", dapancnv);
                     await Task.Delay(10000);
-                    //var cnvnguoidungid = await _context.TraLoiCNVs
-                    //             .Where(x => x.PhongDauId == phongdauid && x.TrangThaiNguoiChoi == "dung")
-                    //             .Select(x => x.NguoiDungId).FirstOrDefaultAsync();
 
-                    //if (cnvnguoidungid == playerid)
-                    //{
-                    //    var ctpdcnv = await _context.ChiTietPhongDaus
-                    //            .Where(x => x.PhongDauId == phongdauid && x.NguoiDungId == cnvnguoidungid)
-                    //            .FirstOrDefaultAsync();
-                    //    ctpdcnv.TongDiem += 50;
-                    //    var diemmoi = ctpdcnv.TongDiem;
-                    //    await _context.SaveChangesAsync();
-                    //}
-                    string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
+                    //string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
+                    string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongdauid }, Request.Scheme);
                     await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
                 }
 
@@ -410,29 +642,14 @@ namespace Do_An_Tot_Nghiep.Controllers
 
                 if (answer == cauhoi.DapAn)
                 {
-                    //NguoiChoiTraLoiDung nc = new NguoiChoiTraLoiDung();
-                    //nc.PlayerId = (int)ctpd.NguoiDungId;
-                    //nctld.Add(nc);
                     ctpd.TongDiem += 10;
-                    tlv2.Result = 1;
-                    //await _context.SaveChangesAsync();
-
                 }
                 else
                 {
                     tlv2.Result = 0;
                 }
                 tlv2.Id = 0;
-                //var checktrungid = _context.TraLoiVong2s.Where(x => x.PlayerId == playerid).FirstOrDefault();
-                //if (checktrungid != null)
-                //{
 
-                //}
-                //else
-                //{
-                //    _context.Add(tlv2);
-                //    _context.SaveChanges();
-                //}
 
                 using (var transaction = _context.Database.BeginTransaction())
                 {
@@ -458,16 +675,6 @@ namespace Do_An_Tot_Nghiep.Controllers
                     }
                 }
 
-    //            var duplicates = _context.TraLoiVong2s
-    //            .GroupBy(x => x.PlayerId)
-    //             .Where(g => g.Count() > 1)
-    //                .SelectMany(g => g.Skip(1))
-    //            .AsEnumerable()
-    //.ToList();
-
-
-                //_context.TraLoiVong2s.RemoveRange(duplicates);
-                //await _context.SaveChangesAsync();
 
                 CauDaHoi cdh = new CauDaHoi();
                 cdh.Id = 0;
@@ -645,65 +852,6 @@ namespace Do_An_Tot_Nghiep.Controllers
                 int hangngang = Convert.ToInt32(answer);
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang);
 
-                //if (answer != null || answer != "")
-                //{
-                //    if (int.TryParse(answer, out _))
-                //    {
-                //        int hangngang = Convert.ToInt32(answer);
-                //        int index = hangngang - 1;
-                //        var cauhois = await _context.CauHois.Where(x => x.ChuongNgaiVatId == cnvid).ToListAsync();
-                //        var idcauhoicanlay = cauhois[index].CauHoiId;
-                //        var checkdahoichua = await _context.CauDaHois.Where(x => x.PhongDauId == phongdauid).FirstOrDefaultAsync(x=> x.CauHoiId == idcauhoicanlay);
-                //        if(checkdahoichua != null)
-                //        {
-                //            var cdhs = await _context.CauDaHois.Where(x => x.PhongDauId == phongdauid).ToListAsync();
-
-                //            var randomcauhoi = cauhois.FirstOrDefault(x => !cdhs.Any(c => c.CauHoiId == x.CauHoiId));
-
-                //            if (randomcauhoi != null)
-                //            {
-                //                int index1 = cauhois.IndexOf(randomcauhoi);
-                //                int hangngang1 = index1 + 1;
-                //                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang1);
-                //            }
-                //        }    
-                //        else
-                //        {
-                //            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang);
-                //        }
-                //    }  
-                //    else
-                //    {
-                //        var cauhois = await _context.CauHois.Where(x => x.ChuongNgaiVatId == cnvid).ToListAsync();
-
-                //        var cdhs = await _context.CauDaHois.Where(x => x.PhongDauId == phongdauid).ToListAsync();
-
-                //        var randomcauhoi = cauhois.FirstOrDefault(x => !cdhs.Any(c => c.CauHoiId == x.CauHoiId));
-
-                //        if(randomcauhoi != null)
-                //        {
-                //            int index = cauhois.IndexOf(randomcauhoi);
-                //            int hangngang = index + 1;
-                //            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang);
-                //        }    
-                //    }    
-                //}    
-                //else
-                //{
-                //    var cauhois = await _context.CauHois.Where(x => x.ChuongNgaiVatId == cnvid).ToListAsync();
-
-                //    var cdhs = await _context.CauDaHois.Where(x => x.PhongDauId == phongdauid).ToListAsync();
-
-                //    var randomcauhoi = cauhois.Where(x => !cdhs.Any(c => c.CauHoiId == x.CauHoiId)).FirstOrDefault();
-
-                //    if (randomcauhoi != null)
-                //    {
-                //        int index = cauhois.IndexOf(randomcauhoi);
-                //        int hangngang = index + 1;
-                //        await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestion", cauhoi2, hangngang);
-                //    }
-                //}    
-
             }
 
             //else khác
@@ -711,14 +859,14 @@ namespace Do_An_Tot_Nghiep.Controllers
             {
                 
                 await Task.Delay(10000);
-                string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
+                string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongdauid }, Request.Scheme);
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
             }
             else if (chon == 4)
             {
                 
                 await Task.Delay(10000);
-                string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
+                string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongdauid }, Request.Scheme);
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
 
             }
@@ -726,7 +874,7 @@ namespace Do_An_Tot_Nghiep.Controllers
             {
                 
                 await Task.Delay(10000);
-                string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
+                string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongdauid }, Request.Scheme);
                 await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
             }
             return Ok();
@@ -1293,6 +1441,10 @@ namespace Do_An_Tot_Nghiep.Controllers
             }    
         }
 
+
+        
+
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -1422,5 +1574,53 @@ namespace Do_An_Tot_Nghiep.Controllers
         {
             return _context.PhongChos.Any(e => e.PhongChoId == id);
         }
+
+        //random câu 1
+        //var cau1 = await _context.CauHois.Where(x => x.VongCauHoi == 3 && x.MucDo == 1).ToListAsync();
+        //List<int> idcauhoi1 = new List<int>();
+        //foreach(var ch in cau1)
+        //{
+        //    idcauhoi1.Add(ch.CauHoiId);
+        //}
+
+        //Random random1 = new Random();
+        //int randomIndex1 = random1.Next(idcauhoi1.Count);
+        //int randomValue1 = idcauhoi1[randomIndex1];
+
+        ////random câu 2
+        //var cau2 = await _context.CauHois.Where(x => x.VongCauHoi == 3 && x.MucDo == 2).ToListAsync();
+        //List<int> idcauhoi2 = new List<int>();
+        //foreach (var ch in cau2)
+        //{
+        //    idcauhoi2.Add(ch.CauHoiId);
+        //}
+
+        //Random random2 = new Random();
+        //int randomIndex2 = random2.Next(idcauhoi2.Count);
+        //int randomValue2 = idcauhoi2[randomIndex2];
+
+        ////random câu 3
+        //var cau3 = await _context.CauHois.Where(x => x.VongCauHoi == 3 && x.MucDo == 3).ToListAsync();
+        //List<int> idcauhoi3 = new List<int>();
+        //foreach (var ch in cau3)
+        //{
+        //    idcauhoi3.Add(ch.CauHoiId);
+        //}
+
+        //Random random3 = new Random();
+        //int randomIndex3 = random3.Next(idcauhoi3.Count);
+        //int randomValue3 = idcauhoi3[randomIndex3];
+
+        ////random câu 4
+        //var cau4 = await _context.CauHois.Where(x => x.VongCauHoi == 3 && x.MucDo == 4).ToListAsync();
+        //List<int> idcauhoi4 = new List<int>();
+        //foreach (var ch in cau4)
+        //{
+        //    idcauhoi4.Add(ch.CauHoiId);
+        //}
+
+        //Random random4 = new Random();
+        //int randomIndex4 = random4.Next(idcauhoi4.Count);
+        //int randomValue4 = idcauhoi4[randomIndex4];
     }
 }
