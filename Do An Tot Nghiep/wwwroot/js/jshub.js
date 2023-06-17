@@ -640,8 +640,16 @@ connection.on("NextQuestion4", function (solangoicauhoi, solangoi)
 {
     if (solangoicauhoi == 3 && solangoi == 4) {
         setTimeout(function () {
-            var url = '@Url.Action("Index", "PhongCho", new { scheme = Request.Scheme })';
+            /*var url = '@Url.Action("Index", "PhongCho", new { scheme = Request.Scheme })';*/
+            //var url = 'Index';
+            //window.location.assign(url);
+            var url = "@Url.Action(\"Index\", \"PhongCho\", new { scheme = Request.Scheme })";
             window.location.assign(url);
+            //var number = 123; // giá trị của biến int number
+
+            //var url = "/PhongCho/CheckKetQua?idphong=" + number;
+
+            //window.location.assign(url);
         }, 5000);
     }
     else

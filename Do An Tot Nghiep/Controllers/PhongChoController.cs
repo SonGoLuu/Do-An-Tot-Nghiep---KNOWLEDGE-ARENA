@@ -288,10 +288,34 @@ namespace Do_An_Tot_Nghiep.Controllers
         {
             //random câu hỏi
             var listcauhoi = await _context.CauHois.Where(x => x.VongCauHoi == 4 && x.GoiCauHoi.Diem == goicauhoi).ToListAsync();
+            var listcaudahoi = await _context.CauDaHoiVong4.ToListAsync();
             List<int> idcauhoi = new List<int>();
+            List<int> idcaudahoi = new List<int>();
+            if(listcaudahoi.Count > 0)
+            {
+                foreach (var ch in listcaudahoi)
+                {
+                    idcaudahoi.Add(ch.CauHoiId);
+                }
+            }    
+
             foreach (var ch in listcauhoi)
             {
-                idcauhoi.Add(ch.CauHoiId);
+                if(idcaudahoi.Count > 0)
+                {
+                    if(idcaudahoi.Contains(ch.CauHoiId))
+                    {
+
+                    }   
+                    else
+                    {
+                        idcauhoi.Add(ch.CauHoiId);
+                    }    
+                }  
+                else
+                {
+                    idcauhoi.Add(ch.CauHoiId);
+                }    
             }
 
             Random random = new Random();
@@ -302,6 +326,12 @@ namespace Do_An_Tot_Nghiep.Controllers
                 .Include(x=> x.LinhVuc)
                 .Where(x => x.CauHoiId == randomValue).FirstOrDefaultAsync();
 
+            CauDaHoiVong4 cdhv4 = new CauDaHoiVong4();
+            cdhv4.Id = 0;
+            cdhv4.PhongDauId = phongdauid;
+            cdhv4.CauHoiId = randomValue;
+            _context.Add(cdhv4);
+            await _context.SaveChangesAsync();
             var cauhoiv4 = System.Text.Json.JsonSerializer.Serialize(cauhoi);
 
             await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestionVong4", cauhoiv4, cauhoiso, checknshv);

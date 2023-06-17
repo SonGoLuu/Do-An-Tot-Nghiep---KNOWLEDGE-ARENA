@@ -30,6 +30,7 @@ namespace Do_An_Tot_Nghiep.Models
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; }
         public virtual DbSet<TraLoiCNV> TraLoiCNVs { get; set; }
         public virtual DbSet<CauDaHoi> CauDaHois { get; set; }
+        public virtual DbSet<CauDaHoiVong4> CauDaHoiVong4 { get; set; }
         public virtual DbSet<TraLoiVong2> TraLoiVong2s { get; set; }
         public virtual DbSet<TraLoiVong3> TraLoiVong3s { get; set; }
         public virtual DbSet<TranhTraLoiVong4> TranhTraLoiVong4s { get; set; }
@@ -348,6 +349,20 @@ namespace Do_An_Tot_Nghiep.Models
             modelBuilder.Entity<CauDaHoi>(entity =>
             {
                 entity.ToTable("CauDaHoi");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.PhongDauId).HasColumnName("PhongDauID");
+
+                entity.Property(e => e.CauHoiId).HasColumnName("CauHoiID");
+
+                entity.HasKey(e => e.Id);
+
+            });
+
+            modelBuilder.Entity<CauDaHoiVong4>(entity =>
+            {
+                entity.ToTable("CauDaHoiVong4");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
