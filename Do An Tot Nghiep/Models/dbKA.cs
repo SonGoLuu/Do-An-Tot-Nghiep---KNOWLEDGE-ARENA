@@ -32,6 +32,7 @@ namespace Do_An_Tot_Nghiep.Models
         public virtual DbSet<CauDaHoi> CauDaHois { get; set; }
         public virtual DbSet<TraLoiVong2> TraLoiVong2s { get; set; }
         public virtual DbSet<TraLoiVong3> TraLoiVong3s { get; set; }
+        public virtual DbSet<TranhTraLoiVong4> TranhTraLoiVong4s { get; set; }
         public virtual DbSet<XepHang> XepHangs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -325,6 +326,20 @@ namespace Do_An_Tot_Nghiep.Models
                 entity.Property(e => e.Result).HasColumnName("Result");
 
                 entity.Property(e => e.PhongDauId).HasColumnName("PhongDauID");
+
+                entity.HasKey(e => e.Id);
+
+            });
+
+            modelBuilder.Entity<TranhTraLoiVong4>(entity =>
+            {
+                entity.ToTable("TranhTraLoiVong4");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.PhongDauId).HasColumnName("PhongDauID");
+
+                entity.Property(e => e.NguoiDungId).HasColumnName("NguoiDungID");
 
                 entity.HasKey(e => e.Id);
 

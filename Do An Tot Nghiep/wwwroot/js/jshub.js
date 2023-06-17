@@ -480,6 +480,190 @@ connection.on("NextQuestionV3", function (slg) {
     
 });
 
+//vòng 4
+connection.on("UpdateScore4", function (html) {
+    $('#playerNscore4').empty();
+    $('#playerNscore4').html(html);
+});
+
+connection.on("CapNhatGoiCau1", function (goicauhoi) {
+    document.getElementById("diemcau1").innerHTML = "CÂU 1 - " + goicauhoi.toString() + " ĐIỂM";
+});
+connection.on("CapNhatGoiCau2", function (goicauhoi) {
+    document.getElementById("diemcau2").innerHTML = "CÂU 2 - " + goicauhoi.toString() + " ĐIỂM";
+});
+connection.on("CapNhatGoiCau3", function (goicauhoi) {
+    document.getElementById("diemcau3").innerHTML = "CÂU 3 - " + goicauhoi.toString() + " ĐIỂM";
+
+    //gọi hàm hỏi chọn ngôi sao hy vọng
+    $('#hoichonngoisao').trigger('click');
+});
+
+
+var _canCallv4 = true;
+let canCallv4 = true;
+var _lastCalledTimev4 = Date.now() - 10000; // set to 10 seconds ago
+connection.on("UpdateQuestionVong4", function (cauhoiv4, cauhoiso, checknshv) {
+    if (canCallv4) {
+        canCallv4 = false;
+        var question = JSON.parse(cauhoiv4);
+
+        var questionHtml = "";
+        questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+        questionHtml += question.NoiDung;
+        questionHtml += "</p>";
+        $('#question-containers').html(questionHtml);
+
+        var donghocat = document.getElementById("donghocat");
+        // Thêm class "column" vào phần tử
+        donghocat.classList.add("column4");
+
+        console.log(donghocat);
+
+        //màu xanhhh câu hỏi
+        if (cauhoiso != 1)
+        {
+            var thediv = "divdiemcau" + (cauhoiso - 1).toString();
+            var div = document.getElementById(thediv);
+            div.style.backgroundColor = "none";
+        }
+        var thediv = "divdiemcau" + cauhoiso.toString();
+        var div = document.getElementById(thediv);
+        div.style.backgroundColor = "green";
+
+        //gọi hàm lấy đáp án
+        var idcauhoi = parseInt(question.CauHoiId);
+        
+
+        setTimeout(function () {
+            canCallv4 = true;
+            donghocat.classList.remove("column4");
+            $('#choosecheckanswer').trigger('click', [idcauhoi, checknshv]);
+        }, 15000);
+
+    }
+});
+
+connection.on("UpdateAnswer4", function (traloi) {
+    console.log("Đây là updateanswer4");
+    var ht = document.getElementById("hienthicautraloi");
+    ht.innerHTML = traloi.toUpperCase();
+    ht.style.backgroundColor = "transparent";
+});
+
+connection.on("UpdateResult4", function (cauhoiid, result, solangoicauhoi, solangoi) {
+    var pp = document.getElementById("hienthicautraloi");
+    if (result == 1)
+    {
+        pp.style.backgroundColor = "green";
+
+        //next
+    }
+    else
+    {
+        pp.style.backgroundColor = "red";
+
+        setTimeout(function () {
+            $('#moinguoikhactraloi').trigger('click', [cauhoiid, solangoicauhoi, solangoi]);
+        }, 3000);
+    }
+
+});
+connection.on("ThongBaoDapAnV4", function (dapan) {
+    var pp = document.getElementById("hienthidapancauhoi");
+    pp.innerHTML = "Đáp án: " + dapan;
+});
+
+connection.on("NguoiBamTTL", function (hovaten) {
+    var divElement = document.getElementById("hienthianh");
+        // Tạo một phần tử div mới
+    var div = document.createElement("div");
+    div.id = "divttl";
+    div.className = "box";
+    div.style.width = "350px";
+    div.style.marginLeft = "1135px";
+    div.style.position = "absolute";
+    div.style.bottom = "0px";
+    div.style.marginBottom = "1px";
+    div.style.border = "solid 2px white";
+    var answer = "";
+
+        // Thêm nội dung của phần tử div mới
+    div.innerHTML = `
+            <p style="text-align:center; margin-right:35px; font-size: 12px">${hovaten.toUpperCase()}</p>
+            <span style="text-align:center ;font-size: 12px">${answer.toUpperCase()}</span>
+            `;
+    divElement.appendChild(div);
+
+    //vô hiệu hóa btn
+    var btn = document.getElementById("btnTTL");
+    if (btn != null)
+    {
+        btn.remove();
+    }
+});
+var cnttl = 0;
+connection.on("ChonNguoiTTL", function (idplayer, idcauhoi, solangoicauhoi, solangoi) {
+    cnttl++;
+    console.log("fix bug cnttl");
+    console.log("cnttl: " + cnttl);
+    if (cnttl == 3) {
+        cnttl = 0;
+        console.log("đây là connection.on ChonNguoiTTL");
+        console.log("cnttl: " + cnttl);
+        console.log("idplayer: " + idplayer);
+        console.log("idcauhoi: " + idcauhoi);
+        console.log("solangoicauhoi: " + solangoicauhoi);
+        console.log("solangoi: " + solangoi);
+        $('#chonnguoittl').trigger('click', [idplayer, idcauhoi, solangoicauhoi, solangoi]);
+    }
+});
+
+connection.on("UpdateResultTTL", function (hovaten, cautraloi, dapan, result) {
+    var divElement = document.getElementById("divttl");
+    divElement.innerHTML = `
+            <p style="text-align:center; margin-right:35px; font-size: 12px">${hovaten.toUpperCase()}</p>
+            <span style="text-align:center ;font-size: 12px">${cautraloi.toUpperCase()}</span>
+            `;
+    if (result == 1) {
+        divElement.style.backgroundColor = "green";
+    }
+    else
+    {
+        divElement.style.backgroundColor = "red";
+    }
+    var div = document.getElementById("hienthidapancauhoi");
+    div.innerHTML = "Đáp án: " + dapan.toUpperCase();
+});
+
+connection.on("NextQuestion4", function (solangoicauhoi, solangoi)
+{
+    if (solangoicauhoi == 3 && solangoi == 4) {
+        setTimeout(function () {
+            var url = '@Url.Action("Index", "PhongCho", new { scheme = Request.Scheme })';
+            window.location.assign(url);
+        }, 5000);
+    }
+    else
+    {
+        $('#nextquestion').trigger('click', [solangoicauhoi, solangoi]);
+    }
+});
+
+var goikhongaitraloi = 0;
+connection.on("GoiKhongAiTraLoi", function (phongdauid, cauhoiid, solangoicauhoi, solangoi) {
+    goikhongaitraloi++;
+    if (goikhongaitraloi == 3)
+    {
+        goikhongaitraloi = 0;
+        $('#khongaitraloi').trigger('click', [phongdauid, cauhoiid, solangoicauhoi, solangoi]);
+    }
+});
+
+connection.on("CheckBtnTLL", function (cauhoiid, solangoicauhoi, solangoi) {
+    $('#checkbtnTTL').trigger('click', [cauhoiid, solangoicauhoi, solangoi]);
+});
+
 connection.start().then(function () {
     //dosomething
 }).catch(function (err) {

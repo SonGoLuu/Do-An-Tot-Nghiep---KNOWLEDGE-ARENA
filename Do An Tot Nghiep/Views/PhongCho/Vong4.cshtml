@@ -1,0 +1,798 @@
+﻿@{
+    Layout = null;
+
+}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Vòng 4</title>
+    <link rel="stylesheet" href="/css/site.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+
+
+        .centerv2 {
+            position: absolute;
+            margin-top: -9.5%;
+            z-index: 1;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: transparent;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            background-size: cover;
+            padding-top: 6px
+        }
+
+
+        .box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 1920px;
+            height: 50px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box p {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-left: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+
+            .box span {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-right: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .containercenter {
+            display: flex;
+        }
+
+        .box-center {
+            width: 100%;
+            height: 588px;
+            background-color: #ccc;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box-3 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1920px;
+            height: 33px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box-3 p {
+                margin: 0;
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .box .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            border: 2px solid;
+            border-right: 1.5px solid;
+            color: gray;
+            font-size: 13px;
+            font-weight: bold;
+            background-color: gray;
+            text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
+            border-color: gray;
+            /*background-color: purple;*/
+            /*background-color: green;*/
+            /*border-color: white;*/
+            /*text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);*/
+        }
+
+        .square-button {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: transparent;
+            border: 3px solid black;
+            color: black;
+            font-size: 22px;
+            text-align: center;
+            color: white;
+            line-height: 50px;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container" id="playerNscore4">
+        @foreach (var player in ViewBag.players)
+        {
+            <div class="box">
+
+                <p>@player.NguoiDung.HoVaTen.ToUpper()</p>
+                <span>@player.TongDiem</span>
+
+            </div>
+        }
+
+    </div>
+    <div class="containercenter" style="position: relative;">
+        <div id="hienthianh" class="box-center" style="text-align: center;">
+            <p id="nguoidangvedich" style="color:white">
+                @*TRẦN HUỲNH LƯU*@
+                @ViewBag.players[0].NguoiDung.HoVaTen.ToUpper()
+            </p>
+            <p id="hienthicautraloi" style="color:white">
+
+            </p>
+
+            <p id="hienthidapancauhoi" style="color:white">
+
+            </p>
+
+            @*<div class="box" style="width: 350px; margin-left: 1135px; position: absolute; bottom: 0px; margin-bottom: 1px; border: solid 2px white;">
+                    <p style="text-align:center; margin-right:35px; font-size: 12px">TRẦN HUỲNH LƯU</p>
+
+                    <span style="text-align:center ;font-size: 12px">CHIẾN KHU VIỆT BẮC</span>
+                </div>*@
+        </div>
+        <div id="donghocat" style="background-color: green; width: 35px; margin-right: 3px;"></div>
+
+    </div>
+
+    <div class="container" style="padding-top: 3px">
+        <div class="box-3" style="width: 7500px">
+            <p>@ViewBag.hovaten.ToUpper()</p>
+        </div>
+        <div id="divdiemcau1" class="box-3" style="font-style: italic; background-color: transparent">
+
+            <p id="diemcau1">@*CÂU 1 - 10 ĐIỂM*@</p>
+
+        </div>
+        <div id="divdiemcau2" class="box-3" style="font-style: italic; background-color: transparent">
+
+            <p id="diemcau2">@*CÂU 2 - 10 ĐIỂM*@</p>
+
+        </div>
+        <div id="divdiemcau3" class="box-3" style="font-style: italic; background-color: transparent">
+
+            <p id="diemcau3">@*CÂU 3 - 10 ĐIỂM*@</p>
+
+        </div>
+    </div>
+    <div class="containercenter">
+        <div id="question-containers" class="box-center" style="background: rgb(68, 68, 68); height: 120px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+            @*<p style="text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px">
+                    CHỌN GÓI CÂU HỎI:
+                </p>
+                <button id="goi10" class="square-button">10</button>
+                <button id="goi20" class="square-button">20</button>
+                <button id="goi30" class="square-button">30</button>*@
+        </div>
+    </div>
+    <div class="containercenter">
+        <div id="chuangoisao" class="box-center" style="background: rgb(68, 68, 68); height: 58px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+            <input id="answerInput" type="text" name="useranswer" placeholder="Nhập vào đáp án của bạn" style="background-color: transparent; border-color: transparent; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px; width: 100%; text-align: center;">
+            @*<button style="background-image: url('nshv.png'); width:50px; height:50px; border:none; margin-right:20px"></button>*@
+        </div>
+    </div>
+    <button id="hoichonngoisao" type="button" style="display:none"></button>
+    <button id="doneHoiNSHV" type="button" style="display:none"></button>
+    <button id="nextquestion" type="button" style="display:none"></button>
+    <button id="checkanswer4" type="button" style="display:none">Kiểm tra câu trả lời</button>
+    <button id="choosecheckanswer" type="button" style="display:none"></button>
+    <button id="moinguoikhactraloi" type="button" style="display:none"></button>
+    <button id="checkbtnTTL" type="button" style="display:none"></button>
+    <button id="chonnguoittl" type="button" style="display:none"></button>
+    <button id="checkdapanttl" type="button" style="display:none"></button>
+    <button id="khongaitraloi" type="button" style="display:none"></button>
+    @*<button id="submitButton3" type="button" style="display:none">Kiểm tra câu trả lời</button>
+        <button id="hienthicauhoitieptheo" type="button" style="display:none"></button>*@
+    @*<button id="hienthiovuong" type="button" style="display:none"></button>
+        <button id="hienthidapan" type="button" style="display:none"></button>
+        <button id="thoigian" type="button" style="display:none"></button>
+        <button id="chonnguoitraloi" type="button" style="display:none"></button>
+        <button id="checkdapancnv" type="button" style="display:none"></button>
+        <button id="randomcauhoi" type="button" style="display:none"></button>
+        <button id="kiemtrasau10s" type="button" style="display:none"></button>
+        <button id="goihamchecklancuoi" type="button" style="display:none"></button>
+        <button id="vohieuhoabtn" type="button" style="display:none"></button>*@
+    @*<button id="xanhdo" type="button" style="display:none"></button>*@
+</body>
+
+</html>
+
+
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/jshub.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    var players = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.players));
+
+    var solangoiv4 = 0;
+
+    var solannhan = 0;
+
+    var solangoicauhoiv4 = 0;
+
+    var checkChonNSHV = 0;
+
+    var CanCallNSHV = true;
+
+    var diemcau1 = 0;
+    var diemcau2 = 0;
+    var diemcau3 = 0;
+
+    var _canCall = true;
+
+    var _lastCalledTime = Date.now() - 10000; // set to 10 seconds ago
+
+    function hienthichon(id)
+    {
+        console.log("function hienthichon");
+        var currentTime = Date.now();
+        solannhan = 0;
+        if (_canCall && (currentTime - _lastCalledTime) >= 10000) {
+            solangoiv4 = id;
+            solangoiv4++;
+            console.log("số lần gọi: " + solangoiv4);
+        var currentplayer = @ViewBag.playerid;
+            var idplayer = players[id].NguoiDungId;
+            console.log("idplayer sẽ được chọn:" + idplayer);
+        if (currentplayer == idplayer)
+        {
+            var questionHtml = "";
+            questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+            questionHtml += "CHỌN GÓI CÂU HỎI: ";
+            questionHtml += "</p>";
+            questionHtml += "<button id=\"goi10\" class=\"square - button\">10</button>";
+            questionHtml += "<button id=\"goi20\" class=\"square - button\">20</button>";
+            questionHtml += "<button id=\"goi30\" class=\"square - button\">30</button>";
+            $('#question-containers').html(questionHtml);
+
+            //đăng ký sự kiện click
+            $('#goi10').click(function (event) {
+        console.log("Đã nhấn goi10");
+        solannhan++;
+        console.log("Số lần nhấn: " + solannhan);
+        var phongdauid = @ViewBag.phongdauid;
+        var chonValue = parseInt(solannhan);
+        var goicauhoi = 10;
+        if (solannhan == 1) {
+            diemcau1 = 10;
+        }
+        else if (solannhan == 2) {
+            diemcau2 = 10;
+        }
+        else if (solannhan == 3)
+        {
+            diemcau3 = 10;
+        }
+        var url = '@Url.Action("CapNhatGoiCauHoi", "PhongCho")';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { chon: chonValue, phongdauid: phongdauid, goicauhoi: goicauhoi },
+            success: function (result) {
+                console.log("Gọi hàm capnhatgogicauhoi thành công");
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+            $('#goi20').click(function (event) {
+        console.log("Đã nhấn goi20");
+        solannhan++;
+        var phongdauid = @ViewBag.phongdauid;
+        var chonValue = parseInt(solannhan);
+        var goicauhoi = 20;
+        if (solannhan == 1) {
+            diemcau1 = 20;
+        }
+        else if (solannhan == 2) {
+            diemcau2 = 20;
+        }
+        else if (solannhan == 3)
+        {
+            diemcau3 = 20;
+        }
+        var url = '@Url.Action("CapNhatGoiCauHoi", "PhongCho")';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { chon: chonValue, phongdauid: phongdauid, goicauhoi: goicauhoi },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+            $('#goi30').click(function (event) {
+        console.log("Đã nhấn goi30");
+        solannhan++;
+        var phongdauid = @ViewBag.phongdauid;
+        var chonValue = parseInt(solannhan);
+        var goicauhoi = 30;
+        if (solannhan == 1) {
+            diemcau1 = 30;
+        }
+        else if (solannhan == 2) {
+            diemcau2 = 30;
+        }
+        else if (solannhan == 3)
+        {
+            diemcau3 = 30;
+        }
+        var url = '@Url.Action("CapNhatGoiCauHoi", "PhongCho")';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { chon: chonValue, phongdauid: phongdauid, goicauhoi: goicauhoi },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+         }
+            // End of your code
+            setTimeout(function () {
+                _canCall = true;
+            }, 19500);
+        }
+
+    };
+
+    var _canCallhtcns = true;
+
+    var _lastCalledTimehtcns = Date.now() - 10000; // set to 10 seconds ago
+    function hienthichonngoisao(id)
+    {
+        console.log("gọi hàm hienthichonngoisao thành công");
+        var currentTime = Date.now();
+        if (_canCallhtcns && (currentTime - _lastCalledTimehtcns) >= 10000) {
+            var currentplayer = @ViewBag.playerid;
+            var idplayer = players[id].NguoiDungId;
+            if (currentplayer == idplayer) {
+                var questionHtml = "";
+                questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+                questionHtml += "Bạn có quyền chọn Ngôi sao hy vọng";
+                questionHtml += "</p>";
+                $('#question-containers').html(questionHtml);
+
+                // Tạo một button mới
+                var button = document.createElement("button");
+
+                // Thiết lập thuộc tính style cho button
+                button.style.backgroundImage = "url('/nshv.png')";
+                button.style.width = "50px";
+                button.style.height = "50px";
+                button.style.border = "none";
+                button.style.marginRight = "20px";
+
+                button.id = "btnNSHV";
+
+                // Lấy thẻ <div> có id là "chuangoisao"
+                var div = document.getElementById("chuangoisao");
+
+                // Thêm button vào trong thẻ <div>
+                div.appendChild(button);
+
+                //đăng ký sự kiện click button
+                $('#btnNSHV').click(function (event) {
+                    checkChonNSHV = 1;
+                });
+
+                var donghocat = document.getElementById("donghocat");
+                // Thêm class "column" vào phần tử
+                donghocat.classList.add("column");
+
+                setTimeout(function () {
+                    donghocat.classList.remove("column");
+                    var btn = document.getElementById("btnNSHV");
+                    btn.remove();
+                    $('#doneHoiNSHV').trigger('click', checkChonNSHV);
+                }, 10000);
+
+            }
+            //End of your code
+            setTimeout(function () {
+                _canCallhtcns = true;
+            }, 19500);
+
+        }
+    };
+
+
+    $('#hoichonngoisao').click(function (event) {
+        console.log("gọi hàm click hoichonngoisao thành công");
+        console.log("số lần gọi v4: " + solangoiv4);
+        var id = solangoiv4 - 1;
+        console.log("id: " + id);
+        hienthichonngoisao(id);
+    });
+
+    function updatecauhoi(check)
+    {
+        console.log("Đây là hàm updadtecauhoi");
+
+        solangoicauhoiv4++;
+
+        console.log("số lần gọi câu hỏi v4: " + solangoicauhoiv4);
+
+        var phongdauid = @ViewBag.phongdauid;
+
+        var cauhoiso = solangoicauhoiv4;
+
+        var goicauhoi;
+
+        if (solangoicauhoiv4 == 1) {
+            goicauhoi = diemcau1;
+        }
+        else if (solangoicauhoiv4 == 2) {
+            goicauhoi = diemcau2;
+        }
+        else if (solangoicauhoiv4 == 3) {
+            goicauhoi = diemcau3;
+        }
+
+
+        var url = '@Url.Action("UpdateCauHoiVong4", "PhongCho")';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, cauhoiso: cauhoiso, goicauhoi: goicauhoi, checknshv: check },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        /*event.preventDefault();*/
+        //console.log("lỗi của event");
+    };
+
+    $('#doneHoiNSHV').click(function (event, check) {
+        console.log("Hàm doneHoiNSHV");
+        console.log("Check chọn: " + check);
+        if (check == 1)
+        {
+            CanCallNSHV = false;
+        }
+
+        updatecauhoi(check);
+
+    });
+
+
+
+    $('#checkanswer4').click(function (event, idcauhoi, checknshv) {
+        console.log("Đây là checkanswer4");
+        console.log("checknshv: " + checknshv);
+        var phongdauid = @ViewBag.phongdauid;
+        var answer = $('#answerInput').val();
+        var playerid = @ViewBag.playerid;
+        console.log("playerid: " + playerid);
+        var url = '@Url.Action("CheckAnswerVong4", "PhongCho")';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, playerid: playerid, cauhoiid: idcauhoi, answer: answer, checknshv: checknshv, solangoicauhoi: solangoicauhoiv4, solangoi: solangoiv4 },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    $('#choosecheckanswer').click(function (event, idcauhoi, checknshv) {
+        console.log("đây là choosecheckanswer");
+        console.log("số lần gọi v4: " + solangoiv4);
+        var currentplayer = @ViewBag.playerid;
+        var id = solangoiv4 - 1;
+        var idplayer = players[id].NguoiDung.NguoiDungId;
+        if (currentplayer == idplayer)
+        {
+            $('#checkanswer4').trigger('click', [idcauhoi, checknshv]);
+        }
+    });
+
+    $('#moinguoikhactraloi').click(function (event, idcauhoi, solangoicauhoi, solangoi) {
+        var currentplayer = @ViewBag.playerid;
+        console.log("số lần gọi: " + solangoi);
+        var id = solangoi - 1;
+        var idplayer = players[id].NguoiDungId;
+        if (currentplayer != idplayer)
+        {
+            //hiển thị nút tranh bấm
+            // Tạo một button mới
+            var button = document.createElement("button");
+
+            // Thiết lập thuộc tính style cho button
+            button.style.backgroundImage = "url('/tranhtraloi.png')";
+            button.style.width = "50px";
+            button.style.height = "50px";
+            button.style.border = "none";
+            button.style.marginRight = "20px";
+
+            button.id = "btnTTL";
+
+            // Lấy thẻ <div> có id là "chuangoisao"
+            var div = document.getElementById("chuangoisao");
+
+            // Thêm button vào trong thẻ <div>
+            div.appendChild(button);
+
+            var donghocat = document.getElementById("donghocat");
+            // Thêm class "column" vào phần tử
+            donghocat.classList.add("column");
+
+            //đăng ký sự kiện click button
+            $('#btnTTL').click(function (event) {
+                donghocat.classList.remove("column");
+                var phongdauid = @ViewBag.phongdauid;
+        var playerid = @ViewBag.playerid;
+        var url = '@Url.Action("LuuTTL", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, playerid: playerid, cauhoiid: idcauhoi, solangoicauhoi: solangoicauhoi, solangoi: solangoi},
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+
+
+
+            //set thời gian
+            setTimeout(function () {
+                donghocat.classList.remove("column");
+                $('#checkbtnTTL').trigger('click', [idcauhoi, solangoicauhoi, solangoi]);
+            }, 10000);
+        }
+    });
+
+
+    $('#checkbtnTTL').click(function (event, idcauhoi, solangoicauhoi, solangoi) {
+        console.log("Đây là checkbtnTTL");
+        console.log("idcauhoi: " + idcauhoi);
+        console.log("solangoicauhoi: " + solangoicauhoi);
+        console.log("solangoi: " + solangoi);
+        var phongdauid = @ViewBag.phongdauid;
+        var url = '@Url.Action("CheckTTL", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, cauhoiid: idcauhoi, solangoicauhoi: solangoicauhoi, solangoi: solangoi },
+            success: function (result) {
+                console.log("gọi ajax CheckTTL thành công");
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    $('#chonnguoittl').click(function (event, idplayer, idcauhoi, solangoicauhoi, solangoi) {
+        console.log("Đây là chonnguoittl");
+        console.log("idplayer: " + idplayer);
+        var currentplayer =  @ViewBag.playerid;
+        if (idplayer == currentplayer)
+        {
+            console.log("Giao diện người được chọn");
+            var questionHtml = "";
+            questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+            questionHtml += "Bạn đã giành quyền trả lời, mời bạn trả lời câu hỏi";
+            questionHtml += "</p>";
+            $('#question-containers').html(questionHtml);
+            var donghocat = document.getElementById("donghocat");
+            // Thêm class "column" vào phần tử
+            donghocat.classList.add("column");
+            setTimeout(function () {
+                donghocat.classList.remove("column");
+                $('#checkdapanttl').trigger('click', [idplayer, idcauhoi, solangoicauhoi, solangoi]);
+            }, 10000);
+        }
+    });
+
+    $('#checkdapanttl').click(function (event, idplayer, idcauhoi, solangoicauhoi, solangoi) {
+        var phongdauid = @ViewBag.phongdauid;
+        var answer = $('#answerInput').val();
+        var url = '@Url.Action("CheckAnswerTTL", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, playerid: idplayer, cauhoiid: idcauhoi, answer: answer, solangoicauhoi: solangoicauhoi, solangoi: solangoi },
+            success: function (result) {
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+        event.preventDefault();
+    });
+
+    $('#nextquestion').click(function (event, solangoicauhoi, solangoi) {
+        var xoanshv = document.getElementById("btnNSHV");
+
+        if (xoanshv != null) {
+            xoanshv.remove();
+        }
+
+        var xoabtnttl = document.getElementById("btnTTL");
+
+        if (xoabtnttl != null) {
+            xoabtnttl.remove();
+        }
+
+        console.log("Đây là js nextquestion");
+        console.log("solangoicauhoi: " + solangoicauhoi);
+        console.log("solangoi: " + solangoi);
+
+        //xóa câu trả lời, xóa tranh trả lời, xóa đáp án câu hỏi
+        var xoahtctl = document.getElementById("hienthicautraloi");
+        xoahtctl.style.backgroundColor = "transparent";
+        xoahtctl.innerHTML = "";
+
+        var xoattl = document.getElementById("divttl");
+
+        if (xoattl != null)
+        {
+            xoattl.remove();
+        }
+
+        var xoadapan = document.getElementById("hienthidapancauhoi");
+        xoadapan.innerHTML = "";
+
+        if (solangoicauhoi != 3) {
+            var input = document.getElementById("answerInput");
+            input.value = "";
+            input.placeholder = "Nhập vào đáp án của bạn";
+            var get = "divdiemcau" + solangoicauhoi.toString();
+            var divdiem = document.getElementById(get);
+            divdiem.style.backgroundColor = "transparent";
+            var id = solangoi - 1;
+            solangoicauhoiv4 = solangoicauhoi;
+            if (CanCallNSHV) {
+                hienthichonngoisao(id);
+            }
+            else {
+                var check = 0;
+                updatecauhoi(check)
+            }
+        }
+        else
+        {
+            console.log("chuẩn bị chuyển sang người khác");
+            var hovaten = players[solangoi].NguoiDung.HoVaTen;
+            console.log("họ tên: " + hovaten);
+            var input = document.getElementById("answerInput");
+            input.value = "";
+
+            var divdiemcau1 = document.getElementById("divdiemcau1");
+            divdiemcau1.style.backgroundColor = "transparent";
+            var diemcau1 = document.getElementById("diemcau1");
+            diemcau1.innerHTML = "";
+
+            var divdiemcau2 = document.getElementById("divdiemcau2");
+            divdiemcau2.style.backgroundColor = "transparent";
+            var diemcau2 = document.getElementById("diemcau2");
+            diemcau2.innerHTML = "";
+
+            var divdiemcau3 = document.getElementById("divdiemcau3");
+            divdiemcau3.style.backgroundColor = "transparent";
+            var diemcau3 = document.getElementById("diemcau3");
+            diemcau3.innerHTML = "";
+
+            var pp = document.getElementById("nguoidangvedich");
+            pp.innerHTML = hovaten;
+            solangoicauhoiv4 = 0;
+            CanCallNSHV = true;
+            var idchon = solangoi;
+            hienthichon(idchon);
+        }
+    });
+
+    $('#khongaitraloi').click(function (event, phongdauid, cauhoiid, solangoicauhoi, solangoi) {
+        var currentid = @ViewBag.playerid;
+        var idplayer = players[solangoi - 1].NguoiDungId;
+        if (currentid == idplayer)
+        {
+            var url = '@Url.Action("KhongAiTraLoi", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongdauid: phongdauid, cauhoiid: cauhoiid, solangoicauhoi: solangoicauhoi, solangoi: solangoi },
+            success: function (result) {
+                console.log("gọi ajax khongaitraloi");
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+            event.preventDefault();
+        }
+    });
+
+    hienthichon(0);
+
+</script>

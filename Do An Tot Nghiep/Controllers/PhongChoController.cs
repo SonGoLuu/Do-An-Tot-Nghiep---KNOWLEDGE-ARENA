@@ -159,7 +159,7 @@ namespace Do_An_Tot_Nghiep.Controllers
         public async Task<IActionResult> NavigateToPage2(int phongchoid)
         {
             string groupName = phongchoid.ToString();
-            string absoluteUrl = Url.Action("Vong2", "PhongCho", new { phongdauid = phongchoid }, Request.Scheme);
+            string absoluteUrl = Url.Action("Vong4", "PhongCho", new { phongdauid = phongchoid }, Request.Scheme);
             await _signalrHub.Clients.Group(groupName).SendAsync("navigateToPage1", absoluteUrl);
             return Ok();
         }
@@ -229,6 +229,408 @@ namespace Do_An_Tot_Nghiep.Controllers
             await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore1", html);
             return Ok();
         }
+
+        //vòng 4
+        public async Task<IActionResult> Vong4(int phongdauid)
+        {
+            var user = _userManager.GetUserName(User);
+            var IdUser = await _context.TaiKhoans.Include(x => x.NguoiDung)
+                            .Where(x => x.TenDangNhap == user)
+                            .Select(x => x.NguoiDungId)
+                            .FirstOrDefaultAsync();
+            ViewBag.playerid = IdUser;
+            var HoVaTen = await _context.TaiKhoans.Include(x => x.NguoiDung)
+                            .Where(x => x.TenDangNhap == user)
+                            .Select(x => x.NguoiDung.HoVaTen)
+                            .FirstOrDefaultAsync();
+            ViewBag.hovaten = HoVaTen;
+            var players = await _context.ChiTietPhongDaus
+                .Include(p => p.NguoiDung)
+                .Where(p => p.PhongDauId == phongdauid)
+                .ToListAsync();
+            
+            ViewBag.players = players;
+
+            ViewBag.phongdauid = phongdauid;
+
+            Solangoi.Ids.Clear();
+
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CapNhatGoiCauHoi(int chon, int phongdauid, int goicauhoi)
+        {
+            if(chon == 1)
+            {
+                //gọi hàm cập nhật điểm gói câu 1
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("CapNhatGoiCau1", goicauhoi);
+            }
+            if (chon == 2)
+            {
+                //gọi hàm cập nhật điểm gói câu 2
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("CapNhatGoiCau2", goicauhoi);
+            }
+            if (chon == 3)
+            {
+                //gọi hàm cập nhật điểm gói câu 3
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("CapNhatGoiCau3", goicauhoi);
+
+                //delay để hỏi ngôi sao hy vọng
+            }
+            return Ok();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCauHoiVong4(int phongdauid, int cauhoiso, int goicauhoi, int checknshv)
+        {
+            //random câu hỏi
+            var listcauhoi = await _context.CauHois.Where(x => x.VongCauHoi == 4 && x.GoiCauHoi.Diem == goicauhoi).ToListAsync();
+            List<int> idcauhoi = new List<int>();
+            foreach (var ch in listcauhoi)
+            {
+                idcauhoi.Add(ch.CauHoiId);
+            }
+
+            Random random = new Random();
+            int randomIndex = random.Next(idcauhoi.Count);
+            int randomValue = idcauhoi[randomIndex];
+
+            var cauhoi = await _context.CauHois
+                .Include(x=> x.LinhVuc)
+                .Where(x => x.CauHoiId == randomValue).FirstOrDefaultAsync();
+
+            var cauhoiv4 = System.Text.Json.JsonSerializer.Serialize(cauhoi);
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateQuestionVong4", cauhoiv4, cauhoiso, checknshv);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckAnswerVong4(int phongdauid, int playerid, int cauhoiid, string answer, int checknshv, int solangoicauhoi, int solangoi)
+        {
+            var ctpd = await _context.ChiTietPhongDaus
+                        .Where(x => x.NguoiDungId == playerid && x.PhongDauId == phongdauid)
+                        .FirstOrDefaultAsync();
+            var cauhoi = await _context.CauHois
+                            .Where(x => x.CauHoiId == cauhoiid)
+                            .FirstOrDefaultAsync();
+            string traloi = answer;
+            if (answer != null)
+            {
+                if (answer == "")
+                {
+                    traloi = "chưa trả lời";
+                }
+                else
+                {
+                    traloi = answer;
+                }
+            }
+            else
+            {
+                traloi = "chưa trả lời";
+            }
+
+            //hiển thị câu trả lời
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateAnswer4", traloi);
+
+            //delay
+            await Task.Delay(3000);
+
+            //hiển thị kết quả trả lời
+            int result = 0;
+
+            int diem = (int)await _context.GoiCauHois.Where(x => x.GoiCauHoiId == cauhoi.GoiCauHoiId).Select(x => x.Diem).FirstOrDefaultAsync();
+
+
+            if (answer == cauhoi.DapAn)
+            {
+                result = 1;
+                if(checknshv == 0)
+                {
+                    ctpd.TongDiem += diem;
+                }    
+                else
+                {
+                    diem = diem * 2;
+                    ctpd.TongDiem += diem;
+                }    
+                await _context.SaveChangesAsync();
+
+                //hiển thị câu trả lời và đúng sai
+            }
+
+            if(result == 0)
+            {
+                if(checknshv == 1)
+                {
+                    ctpd.TongDiem = ctpd.TongDiem - diem;
+                    await _context.SaveChangesAsync();
+
+                    //update score
+                    var players = await _context.ChiTietPhongDaus
+                                            .Include(x => x.NguoiDung)
+                                            .Where(x => x.PhongDauId == phongdauid)
+                                            .OrderBy(x => x.NguoiDungId)
+                                            .Select(x => new PlayerScore
+                                            {
+                                                Name = x.NguoiDung.HoVaTen,
+                                                Score = (int)x.TongDiem,
+                                                Id = (int)x.NguoiDungId
+                                            })
+                                            .ToListAsync();
+                    var html = "";
+                    foreach (var player in players)
+                    {
+                        html += "<div class=\"box\" id=\"player" + player.Id + "\">";
+                        html += "<p>" + player.Name.ToUpper() + "</p>";
+                        html += "<span>" + player.Score + "</span>";
+                        html += "</div>";
+                    }
+
+                    await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore4", html);
+                }    
+            }    
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateResult4", cauhoi.CauHoiId, result, solangoicauhoi, solangoi);
+
+            if(result == 1)
+            {
+                //update score
+                var players = await _context.ChiTietPhongDaus
+                                        .Include(x => x.NguoiDung)
+                                        .Where(x => x.PhongDauId == phongdauid)
+                                        .OrderBy(x => x.NguoiDungId)
+                                        .Select(x => new PlayerScore
+                                        {
+                                            Name = x.NguoiDung.HoVaTen,
+                                            Score = (int)x.TongDiem,
+                                            Id = (int)x.NguoiDungId
+                                        })
+                                        .ToListAsync();
+                var html = "";
+                foreach (var player in players)
+                {
+                    html += "<div class=\"box\" id=\"player" + player.Id + "\">";
+                    html += "<p>" + player.Name.ToUpper() + "</p>";
+                    html += "<span>" + player.Score + "</span>";
+                    html += "</div>";
+                }
+
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore4", html);
+
+                //next question
+                await Task.Delay(5000);
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("NextQuestion4", solangoicauhoi, solangoi);
+            }    
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LuuTTL(int phongdauid, int playerid, int cauhoiid, int solangoicauhoi, int solangoi)
+        {
+
+            TranhTraLoiVong4 ttl = new TranhTraLoiVong4();
+            ttl.PhongDauId = phongdauid;
+            ttl.NguoiDungId = playerid;
+            _context.Add(ttl);
+            await _context.SaveChangesAsync();
+
+            var hovaten = await _context.NguoiDungs.Where(x => x.NguoiDungId == playerid)
+                .Select(x=>x.HoVaTen).FirstOrDefaultAsync();
+
+            //hiển thị người bấm
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("NguoiBamTTL", hovaten);
+
+            //gọi hàm check trong js
+            //await Task.Delay(2000);
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("CheckBtnTTL", cauhoiid, solangoicauhoi, cauhoiid);
+
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<IActionResult> KhongAiTraLoi(int phongdauid, int cauhoiid, int solangoicauhoi, int solangoi)
+        {
+            //hiển thị đáp án
+            var dapan = await _context.CauHois.Where(x => x.CauHoiId == cauhoiid).Select(x => x.DapAn).FirstOrDefaultAsync();
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ThongBaoDapAnV4", dapan);
+
+            //update score
+            var players = await _context.ChiTietPhongDaus
+                                    .Include(x => x.NguoiDung)
+                                    .Where(x => x.PhongDauId == phongdauid)
+                                    .OrderBy(x => x.NguoiDungId)
+                                    .Select(x => new PlayerScore
+                                    {
+                                        Name = x.NguoiDung.HoVaTen,
+                                        Score = (int)x.TongDiem,
+                                        Id = (int)x.NguoiDungId
+                                    })
+                                    .ToListAsync();
+            var html = "";
+            foreach (var player in players)
+            {
+                html += "<div class=\"box\" id=\"player" + player.Id + "\">";
+                html += "<p>" + player.Name.ToUpper() + "</p>";
+                html += "<span>" + player.Score + "</span>";
+                html += "</div>";
+            }
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore4", html);
+
+
+            //try
+            //{
+            //    lock (_lockObject2)
+            //    {
+            //        _context.TranhTraLoiVong4s.RemoveRange(_context.TranhTraLoiVong4s);
+            //        _context.SaveChanges();
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    // Xử lý lỗi
+            //}
+
+            //next question
+            await Task.Delay(5000);
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("NextQuestion4", solangoicauhoi, solangoi);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckTTL(int phongdauid, int cauhoiid, int solangoicauhoi, int solangoi)
+        {
+            //kiểm tra trong danh sách ttl có ai bấm không
+            var bamttl = await _context.TranhTraLoiVong4s.Where(x => x.PhongDauId == phongdauid).FirstOrDefaultAsync();
+            
+            if(bamttl != null)
+            {
+                //hiển thị người bấm
+                int idplayer = bamttl.NguoiDungId;
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("ChonNguoiTTL", idplayer, cauhoiid, solangoicauhoi, solangoi);
+            }    
+            else
+            {
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("GoiKhongAiTraLoi", phongdauid, cauhoiid, solangoicauhoi, solangoi);
+            }    
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckAnswerTTL(int phongdauid, int playerid, int cauhoiid, string answer, int solangoicauhoi, int solangoi)
+        {
+            var ctpd = await _context.ChiTietPhongDaus
+                        .Where(x => x.NguoiDungId == playerid && x.PhongDauId == phongdauid)
+                        .FirstOrDefaultAsync();
+
+            var cauhoi = await _context.CauHois
+                            .Where(x => x.CauHoiId == cauhoiid)
+                            .FirstOrDefaultAsync();
+
+            string cautraloi = answer;
+
+            if (answer != null)
+            {
+                if (answer == "")
+                {
+                    cautraloi = "chưa trả lời";
+                }
+                else
+                {
+                    cautraloi = answer;
+                }
+            }
+            else
+            {
+                cautraloi = "chưa trả lời";
+            }
+
+
+            int result = 0;
+            int diem = (int)await _context.GoiCauHois.Where(x => x.GoiCauHoiId == cauhoi.GoiCauHoiId).Select(x => x.Diem).FirstOrDefaultAsync();
+            //lấy id người đang về đích
+            var playerss = await _context.ChiTietPhongDaus.Where(x => x.PhongDauId == phongdauid).ToListAsync();
+            int idplayervedich = (int) playerss[solangoi - 1].NguoiDungId;
+
+            var playervedich = await _context.ChiTietPhongDaus.Where(x => x.NguoiDungId == idplayervedich).FirstOrDefaultAsync();
+
+            if (answer == cauhoi.DapAn)
+            {
+                result = 1;
+                ctpd.TongDiem += diem;
+                playervedich.TongDiem = playervedich.TongDiem - diem;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                ctpd.TongDiem = ctpd.TongDiem - diem;
+                if(ctpd.TongDiem < 0)
+                {
+                    ctpd.TongDiem = 0;
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            //update resutl
+            var hovaten = await _context.NguoiDungs.Where(x => x.NguoiDungId == playerid)
+                            .Select(x => x.HoVaTen)
+                            .FirstOrDefaultAsync();
+
+            var dapan = cauhoi.DapAn;
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateResultTTL", hovaten, cautraloi, dapan, result);
+
+            //update score
+            var players = await _context.ChiTietPhongDaus
+                                    .Include(x => x.NguoiDung)
+                                    .Where(x => x.PhongDauId == phongdauid)
+                                    .OrderBy(x => x.NguoiDungId)
+                                    .Select(x => new PlayerScore
+                                    {
+                                        Name = x.NguoiDung.HoVaTen,
+                                        Score = (int)x.TongDiem,
+                                        Id = (int)x.NguoiDungId
+                                    })
+                                    .ToListAsync();
+            var html = "";
+            foreach (var player in players)
+            {
+                html += "<div class=\"box\" id=\"player" + player.Id + "\">";
+                html += "<p>" + player.Name.ToUpper() + "</p>";
+                html += "<span>" + player.Score + "</span>";
+                html += "</div>";
+            }
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("UpdateScore4", html);
+
+            //next question
+            await Task.Delay(5000);
+
+            try
+            {
+                lock (_lockObject2)
+                {
+                    _context.TranhTraLoiVong4s.RemoveRange(_context.TranhTraLoiVong4s);
+                    _context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi
+            }
+
+            await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("NextQuestion4", solangoicauhoi, solangoi);
+
+            return Ok();
+        }
+
 
         //vòng 3
 
