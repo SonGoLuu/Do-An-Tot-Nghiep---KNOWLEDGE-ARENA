@@ -76,7 +76,15 @@ namespace Do_An_Tot_Nghiep
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                
+
+                endpoints.MapControllerRoute(
+                    name: "XepHang",
+                    pattern: "xephang",
+                    defaults: new { controller = "XepHang", action = "Index" });
+                endpoints.MapControllerRoute(
+                    name: "BacXepHang",
+                    pattern: "bacxephang",
+                    defaults: new { controller = "BacXepHang", action = "Index" });
                 endpoints.MapControllerRoute(
                     name: "PhongCho",
                     pattern: "phong-cho",

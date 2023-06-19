@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Do_An_Tot_Nghiep.Hubs;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Connections.Features;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Do_An_Tot_Nghiep.Controllers
 {
@@ -244,14 +246,50 @@ namespace Do_An_Tot_Nghiep.Controllers
                             .Select(x => x.NguoiDung.HoVaTen)
                             .FirstOrDefaultAsync();
             ViewBag.hovaten = HoVaTen;
+
             var players = await _context.ChiTietPhongDaus
                 .Include(p => p.NguoiDung)
                 .Where(p => p.PhongDauId == phongdauid)
                 .ToListAsync();
-            
+
+            //        var playerss = System.Text.Json.JsonSerializer.Serialize(players,
+            //new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve });
             ViewBag.players = players;
+            //        ViewBag.playerss = playerss;
+
 
             ViewBag.phongdauid = phongdauid;
+
+            List<int> id = new List<int>();
+
+            foreach(var p in players)
+            {
+                id.Add((int)p.NguoiDungId);
+            }
+
+            var xephang = await _context.XepHangs
+                .Include(x => x.BacXepHang)
+                .Where(x => id.Contains((int)x.NguoiDungId))
+                .OrderBy(x => x.NguoiDungId).ToListAsync();
+
+      
+            var anhplayer = await _context.NguoiDungs
+                .Where(x => id.Contains(x.NguoiDungId))
+                .OrderBy(x => x.NguoiDungId)
+                .ToListAsync();
+
+            var idframedau = xephang[0].BacXepHangId;
+
+            var anhframe = await _context.BacXepHangs
+                .Select(x => x.Anh).ToListAsync();
+
+            ViewBag.xephang = xephang;
+
+            ViewBag.anhplayer = anhplayer;
+
+            ViewBag.anhframe = anhframe;
+
+            ViewBag.idframedau = idframedau;
 
             Solangoi.Ids.Clear();
 

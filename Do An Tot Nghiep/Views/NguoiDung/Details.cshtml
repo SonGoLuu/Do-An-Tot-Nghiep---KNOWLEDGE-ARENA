@@ -1,0 +1,57 @@
+﻿@model Do_An_Tot_Nghiep.Models.NguoiDung
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>NguoiDung</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.HoVaTen)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.HoVaTen)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.NgaySinh)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NgaySinh)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GioiTinh)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GioiTinh)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.QueQuan)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.QueQuan)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TruongHoc)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TruongHoc)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Avatar)
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Avatar != null && Model.Avatar.Length > 0)
+            {
+                <img src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(Model.Avatar)}")" style="width: 140px; height: 140px;" />
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.NguoiDungId">Edit</a> |
+</div>

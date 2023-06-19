@@ -14,12 +14,14 @@ namespace Do_An_Tot_Nghiep.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly dbKA _context;
         private readonly ILogger<HomeController> _logger;
         private readonly IHubContext<GameHub> _signalrHub;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<IdentityUser> userManager)
+        public HomeController(dbKA context, ILogger<HomeController> logger, UserManager<IdentityUser> userManager)
         {
+            _context = context;
             _logger = logger;
             _userManager = userManager;
         }
@@ -31,6 +33,14 @@ namespace Do_An_Tot_Nghiep.Controllers
             ViewBag.userName = user;
             ViewBag.userName2 = user2;
             return View();
+        }
+
+        public IActionResult TaiKhoanCaNhan()
+        {
+            var user = _userManager.GetUserName(User);
+            var nguoidung = _context.TaiKhoans.Where(x => x.TenDangNhap == user).Select(x => x.NguoiDungId).FirstOrDefault();
+            if (nguoidung != null) return RedirectToAction("Details", "NguoiDung", new { id = nguoidung });
+            else return Ok();
         }
 
         public IActionResult Privacy()

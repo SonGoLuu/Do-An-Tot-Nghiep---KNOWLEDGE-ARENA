@@ -1,6 +1,6 @@
 ﻿@{
     Layout = null;
-
+    int i = 0;
 }
 <!DOCTYPE html>
 
@@ -158,32 +158,50 @@
         {
             <div class="box">
 
-                <p>@player.NguoiDung.HoVaTen.ToUpper()</p>
+                <p>@ViewBag.anhplayer[i].HoVaTen.ToUpper()</p>
                 <span>@player.TongDiem</span>
-
+                @{
+                i++;
+                }
             </div>
         }
 
     </div>
     <div class="containercenter" style="position: relative;">
         <div id="hienthianh" class="box-center" style="text-align: center;">
-            <p id="nguoidangvedich" style="color:white">
+            @if (ViewBag.xephang[0].BacXepHangId == 3)
+            {
+                <img id="my-gif" style="position: absolute; width: 128px; height: 128px; border: none; top: 128px; left: 698px; z-index: 1; "
+                     src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.anhplayer[0].Avatar)}")" />
+                <img id="my-gif2" style="position: absolute; width: 280px; height: 280px; border: none; top: 85px; left: 625px; z-index: 2; "
+                     src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.anhframe[ViewBag.idframedau - 1])}")" />
+
+            }
+            else
+            {
+                <img id="my-gif" style="position: absolute; width: 142px; height: 142px; border: none; top: 166px; left: 688px; z-index: 1; "
+                     src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.anhplayer[0].Avatar)}")" />
+                <img id="my-gif2" style="position: absolute; width: 320px; height: 320px; border: none; top: 75px; left: 600px; z-index: 2; "
+                     src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.idframedau - 1)}")" />
+
+            }
+            <p id="nguoidangvedich" style="padding-top: 360px; padding-left: 31px; font-family: 'Montserrat', sans-serif; color: yellow; font-weight: bold; font-size: 18px ">
                 @*TRẦN HUỲNH LƯU*@
-                @ViewBag.players[0].NguoiDung.HoVaTen.ToUpper()
+                @ViewBag.anhplayer[0].HoVaTen.ToUpper()
             </p>
-            <p id="hienthicautraloi" style="color:white">
+            <p id="hienthicautraloi" style="padding-top: 10px; padding-left: 37px; font-family: 'Montserrat', sans-serif; color: white; font-weight: bold; font-size: 19px ">
 
             </p>
 
-            <p id="hienthidapancauhoi" style="color:white">
+            <p id="hienthidapancauhoi" style="padding-top: 10px; padding-left: 37px; font-family: 'Montserrat', sans-serif; color: white; font-weight: bold; font-size: 19px ">
 
             </p>
 
             @*<div class="box" style="width: 350px; margin-left: 1135px; position: absolute; bottom: 0px; margin-bottom: 1px; border: solid 2px white;">
-                    <p style="text-align:center; margin-right:35px; font-size: 12px">TRẦN HUỲNH LƯU</p>
+            <p style="text-align:center; margin-right:35px; font-size: 12px">TRẦN HUỲNH LƯU</p>
 
-                    <span style="text-align:center ;font-size: 12px">CHIẾN KHU VIỆT BẮC</span>
-                </div>*@
+            <span style="text-align:center ;font-size: 12px">CHIẾN KHU VIỆT BẮC</span>
+        </div>*@
         </div>
         <div id="donghocat" style="background-color: green; width: 35px; margin-right: 3px;"></div>
 
@@ -209,6 +227,7 @@
 
         </div>
     </div>
+
     <div class="containercenter">
         <div id="question-containers" class="box-center" style="background: rgb(68, 68, 68); height: 120px; margin-top: 3px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
             @*<p style="text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px">
@@ -259,7 +278,43 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+    @*@using System.Text.Json;
+    @using System.Text.Json.Serialization;
+@{
+    var options = new JsonSerializerOptions
+    {
+        ReferenceHandler = ReferenceHandler.Preserve,
+        MaxDepth = 128 // Độ sâu tối đa
+    };
+    //var jsonString = JsonSerializer.Serialize(players, options);
+}*@
+
+    @*var bacxephang = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.xephang, options));
+
+    var anhplayer = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.anhplayer, options));
+
+    var anhframe = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.anhframe, options));*@
+
     var players = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.players));
+
+    var anhplayer = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.anhplayer));
+
+    var bacxephang = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.xephang));
+
+    var anhframe = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.anhframe));
+
+    @*var players = JSON.parse(@ViewBag.playerss);
+
+    console.log("players" + players);
+
+    console.log("players" + players[0]);*@
+
+    //var playerss = JSON.parse(players);
+
+    //console.log("playerss [0]" + playerss[0]);
+
+    //console.log("playerss" + playerss);
+
 
     var solangoiv4 = 0;
 
@@ -491,6 +546,11 @@
 
         var goicauhoi;
 
+        console.log("Điểm 1: " + diemcau1);
+        console.log("Điểm 2: " + diemcau2);
+        console.log("Điểm 3: " + diemcau3);
+        
+
         if (solangoicauhoiv4 == 1) {
             goicauhoi = diemcau1;
         }
@@ -500,7 +560,9 @@
         else if (solangoicauhoiv4 == 3) {
             goicauhoi = diemcau3;
         }
+        console.log("goicauhoi: " + goicauhoi);
 
+        console.log("phòng đáu id: " + phongdauid);
 
         var url = '@Url.Action("UpdateCauHoiVong4", "PhongCho")';
 
@@ -561,7 +623,7 @@
         console.log("số lần gọi v4: " + solangoiv4);
         var currentplayer = @ViewBag.playerid;
         var id = solangoiv4 - 1;
-        var idplayer = players[id].NguoiDung.NguoiDungId;
+        var idplayer = players[id].NguoiDungId;
         if (currentplayer == idplayer)
         {
             $('#checkanswer4').trigger('click', [idcauhoi, checknshv]);
@@ -743,7 +805,7 @@
         else
         {
             console.log("chuẩn bị chuyển sang người khác");
-            var hovaten = players[solangoi].NguoiDung.HoVaTen;
+            var hovaten = anhplayer[solangoi].HoVaTen;
             console.log("họ tên: " + hovaten);
             var input = document.getElementById("answerInput");
             input.value = "";
@@ -765,6 +827,62 @@
 
             var pp = document.getElementById("nguoidangvedich");
             pp.innerHTML = hovaten;
+
+            var myGif = document.getElementById("my-gif");
+            myGif.src = "";
+            myGif.removeAttribute("style");
+
+            var myGif2 = document.getElementById("my-gif2");
+            myGif2.src = "";
+            myGif2.removeAttribute("style");
+
+            console.log("bxh: " + bacxephang);
+
+            console.log("bxh1: " + bacxephang[1]);
+
+            var idbacxephang = bacxephang[solangoi].BacXepHangId;
+            $("#my-gif").attr("src", "data:image/png;base64," + anhplayer[solangoi].Avatar);
+            $("#my-gif2").attr("src", "data:image/png;base64," + anhframe[idbacxephang - 1]);
+
+            console.log("idbacxephang: " + idbacxephang);
+
+            if(idbacxephang == 3)
+            {
+                myGif.style.position = "absolute";
+                myGif.style.width = "128px";
+                myGif.style.height = "128px";
+                myGif.style.border = "none";
+                myGif.style.top = "128px";
+                myGif.style.left = "698px";
+                myGif.style.zIndex = "1";
+
+                myGif2.style.position = "absolute";
+                myGif2.style.width = "280px";
+                myGif2.style.height = "280px";
+                myGif2.style.border = "none";
+                myGif2.style.top = "85px";
+                myGif2.style.left = "625px";
+                myGif2.style.zIndex = "2";
+            }
+            else
+            {
+                myGif.style.position = "absolute";
+                myGif.style.width = "142px";
+                myGif.style.height = "142px";
+                myGif.style.border = "none";
+                myGif.style.top = "166px";
+                myGif.style.left = "688px";
+                myGif.style.zIndex = "1";
+
+                myGif2.style.position = "absolute";
+                myGif2.style.width = "320px";
+                myGif2.style.height = "320px";
+                myGif2.style.border = "none";
+                myGif2.style.top = "75px";
+                myGif2.style.left = "600px";
+                myGif2.style.zIndex = "2";
+            }
+
             solangoicauhoiv4 = 0;
             CanCallNSHV = true;
             var idchon = solangoi;

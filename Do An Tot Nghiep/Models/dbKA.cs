@@ -55,7 +55,9 @@ namespace Do_An_Tot_Nghiep.Models
 
                 entity.Property(e => e.BacXepHangId).HasColumnName("BacXepHangID");
 
-                entity.Property(e => e.BacHang).HasMaxLength(100);
+                entity.Property(e => e.BacHang).HasColumnName("BacHang");
+
+                entity.Property(e => e.Anh).HasColumnName("Anh");
             });
 
             modelBuilder.Entity<CauHoi>(entity =>
@@ -386,12 +388,12 @@ namespace Do_An_Tot_Nghiep.Models
                 entity.Property(e => e.NguoiDungId).HasColumnName("NguoiDungID");
 
                 entity.HasOne(d => d.BacXepHang)
-                    .WithMany(p => p.XepHangs)
+                    .WithMany()
                     .HasForeignKey(d => d.BacXepHangId)
                     .HasConstraintName("FK__XepHang__BacXepH__4AB81AF0");
 
                 entity.HasOne(d => d.NguoiDung)
-                    .WithMany(p => p.XepHangs)
+                    .WithMany()
                     .HasForeignKey(d => d.NguoiDungId)
                     .HasConstraintName("FK__XepHang__NguoiDu__49C3F6B7");
             });

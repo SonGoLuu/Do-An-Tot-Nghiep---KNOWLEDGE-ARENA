@@ -15,7 +15,6 @@ namespace Do_An_Tot_Nghiep.Models
             PhongChos = new HashSet<PhongCho>();
             PhongDaus = new HashSet<PhongDau>();
             TaiKhoans = new HashSet<TaiKhoan>();
-            XepHangs = new HashSet<XepHang>();
         }
 
         public int NguoiDungId { get; set; }
@@ -32,6 +31,6 @@ namespace Do_An_Tot_Nghiep.Models
         public virtual ICollection<PhongCho> PhongChos { get; set; }
         public virtual ICollection<PhongDau> PhongDaus { get; set; }
         public virtual ICollection<TaiKhoan> TaiKhoans { get; set; }
-        public virtual ICollection<XepHang> XepHangs { get; set; }
+        
     }
 }
