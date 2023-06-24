@@ -1,0 +1,279 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Example</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: transparent;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            background-size: cover;
+            padding-top: 6px
+        }
+
+
+        .box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 1920px;
+            height: 50px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box p {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-left: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+
+            .box span {
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                margin-right: 20px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .containercenter {
+            display: flex;
+            height: 860px;
+            background-color: red
+        }
+
+        .box-center {
+            width: 100%;
+            height: 860px;
+            background-color: #ccc;
+            background: linear-gradient(to bottom right, rgb(32, 32, 32), rgb(51, 51, 51));
+            justify-content: center;
+            color: white;
+            align-items: center;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+        }
+
+        .box-3 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1920px;
+            height: 33px;
+            background: rgb(68, 68, 68);
+            border-radius: 1px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 3px;
+        }
+
+
+            .box-3 p {
+                margin: 0;
+                color: white;
+                font-weight: bold;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 13px;
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+            }
+
+        .column1 {
+            display: inline-block;
+            width: 70%;
+            height: 700px;
+            vertical-align: top;
+            border: yellow solid;
+        }
+
+        .column2 {
+            display: inline-block;
+            vertical-align: top;
+            margin-left: 30px;
+            width: 410px;
+            height: 270px;
+            border: yellow solid;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="containercenter">
+        <div class="box-center">
+            <div style="height: 30px; border-bottom: yellow solid">
+                <p id="phongdauso" style="text-align:center; color:yellow"></p>
+            </div>
+            <p id="chuphong" style="position:absolute; margin-left:20px"></p>
+            <p id="vongsau" style="position: absolute; margin-left: 1170px"></p>
+            <p id="sogiay" style="margin-left: 1460px"> 00:30</p>
+            <div class="column1">
+                <ul id="ulchat">
+
+                </ul>
+            </div>
+            <div class="column2">
+                <div id="hienthiketquatungvong">
+                    @*<div style="margin-top:15px; width: 50px; height: 50px;">
+                            <img style="position:absolute; margin-left: 30px; width: 45px; height:45px" ; src="C:\Users\admin\Pictures\template\ava1.png" />
+                            <p style="position: absolute; margin-left: 100px; margin-right: 35px; font-size: 12px">TRẦN HUỲNH LƯU</p>
+                            <span style="position: absolute; margin-left: 370px; margin-top:10px; text-align: center; font-size: 12px">30</span>
+                        </div>*@
+
+                </div>
+            </div>
+
+            <div style="height: 53px">
+                <div class="box-center" style="background: rgb(68, 68, 68); height: 53px; margin-top: 15px; margin-right: 3px; display: flex; justify-content: center; align-items: center;">
+                    <input id="nhaptinnhan" type="text" name="useranswer" placeholder="Nhập tin nhắn và nhấn Enter" style="background-color:transparent; border-color: transparent; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px;  width: 100%; text-align: center">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/jshub.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    var anh = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.anh));
+    var htmlne = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.htmlne));
+    var chuphong = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.chuphong));
+    var phongdauso = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.phongdauso));
+    var vongsau = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.vongsau));
+    var player = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.playerid));
+    var div = document.getElementById("hienthiketquatungvong");
+    div.innerHTML = htmlne;
+    $("#nguoiso1").attr("src", "data:image/png;base64," + anh[0]);
+    $("#nguoiso2").attr("src", "data:image/png;base64," + anh[1]);
+    $("#nguoiso3").attr("src", "data:image/png;base64," + anh[2]);
+    $("#nguoiso4").attr("src", "data:image/png;base64," + anh[3]);
+
+    var div1 = document.getElementById("chuphong");
+    div1.innerHTML = "CHỦ PHÒNG: " + chuphong;
+
+    var div2 = document.getElementById("phongdauso");
+    div2.innerHTML = "PHÒNG ĐẤU: " + phongdauso;
+
+    var div3 = document.getElementById("vongsau");
+    div3.innerHTML = vongsau;
+
+    // Lấy thẻ HTML chứa giá trị giây
+    var secondElement = document.getElementById("sogiay");
+
+    // Thiết lập giá trị ban đầu là 30
+    var second = 30;
+
+    // Thiết lập hàm cập nhật giá trị giây
+    var interval = setInterval(function () {
+        // Giảm giá trị giây đi 1
+        second--;
+
+        // Cập nhật giá trị giây trên thẻ HTML
+        secondElement.innerHTML = "00: " + second;
+
+        // Kiểm tra nếu giá trị giây là 0 thì dừng cập nhật
+        if (second === 0) {
+            clearInterval(interval);
+        }
+    }, 1000);
+
+
+    // Lấy thẻ input có id là answerInput
+    var answerInput = document.getElementById('nhaptinnhan');
+
+    // Đăng ký event listener cho thẻ input
+    answerInput.addEventListener('keydown', function (event) {
+        // Kiểm tra xem phím được nhấn có phải là phím Enter không
+        if (event.keyCode === 13) {
+            var phongdauid = phongdauso;
+            var playerid = player;
+            var mess = $('#nhaptinnhan').val();
+            var url = '@Url.Action("UpdateTinNhan", "PhongCho")';
+             $.ajax({
+                url: url,
+                 type: 'POST',
+                 data: {
+                     phongdauid: phongdauid, playerid: playerid, mess: mess
+                },
+                success: function (result) {
+                console.log("Gọi hàm thành công");
+                },
+                error: function (xhr, status, error) {
+                console.error('Error:', error);
+                }
+             });
+        }
+    });
+
+    setTimeout(function () {
+        var phongdauid = @ViewBag.phongdauso;
+        var vongdau = @ViewBag.vongdau;
+        if (vongdau == 4) {
+            window.location.href = "https://localhost:5001/Home/Index";
+        }
+        if (vongdau == 1)
+        {
+            var url = '@Url.Action("NavigateToPage2", "PhongCho")';
+        }
+        if (vongdau == 2)
+        {
+            var url = '@Url.Action("NavigateToPage3", "PhongCho")';
+        }
+        if (vongdau == 3)
+        {
+            var url = '@Url.Action("NavigateToPage4", "PhongCho")';
+        }
+
+        if (vongdau != 4) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    phongchoid: phongdauid, vongdau: vongdau
+                },
+                success: function (result) {
+                    console.log("Gọi hàm thành công");
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+    }, 30000);
+</script>

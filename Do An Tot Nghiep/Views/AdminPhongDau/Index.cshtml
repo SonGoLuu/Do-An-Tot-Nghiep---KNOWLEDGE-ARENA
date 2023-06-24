@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Do_An_Tot_Nghiep.Models.ChiTietPhongDau>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<h3 style="margin-left: 30px">Manage phongdau</h3>>
+
+<table class="table" style="color: white">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TongDiem)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ThuHang)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NguoiDung)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhongDau)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TongDiem)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ThuHang)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NguoiDung.NguoiDungId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhongDau.PhongDauId)
+                </td>
+                <td>
+                    <a style="color: white; background-color: darkred; border-radius: 4px" asp-action="Edit" asp-route-id="@item.ChiTietPhongDauId">Edit</a> |
+                    <a style="color: white; background-color: darkred; border-radius: 4px" asp-action="Details" asp-route-id="@item.ChiTietPhongDauId">Details</a> |
+                    <a style="color: white; background-color: darkred; border-radius: 4px" asp-action="Delete" asp-route-id="@item.ChiTietPhongDauId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

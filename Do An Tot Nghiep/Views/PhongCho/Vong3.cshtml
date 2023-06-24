@@ -179,15 +179,16 @@
     </div>
     <button id="submitButton3" type="button" style="display:none">Kiểm tra câu trả lời</button>
     <button id="hienthicauhoitieptheo" type="button" style="display:none"></button>
+    <button id="chuyensangvong4" type="button" style="display:none"></button>
     @*<button id="hienthiovuong" type="button" style="display:none"></button>
-    <button id="hienthidapan" type="button" style="display:none"></button>
-    <button id="thoigian" type="button" style="display:none"></button>
-    <button id="chonnguoitraloi" type="button" style="display:none"></button>
-    <button id="checkdapancnv" type="button" style="display:none"></button>
-    <button id="randomcauhoi" type="button" style="display:none"></button>
-    <button id="kiemtrasau10s" type="button" style="display:none"></button>
-    <button id="goihamchecklancuoi" type="button" style="display:none"></button>
-    <button id="vohieuhoabtn" type="button" style="display:none"></button>*@
+        <button id="hienthidapan" type="button" style="display:none"></button>
+        <button id="thoigian" type="button" style="display:none"></button>
+        <button id="chonnguoitraloi" type="button" style="display:none"></button>
+        <button id="checkdapancnv" type="button" style="display:none"></button>
+        <button id="randomcauhoi" type="button" style="display:none"></button>
+        <button id="kiemtrasau10s" type="button" style="display:none"></button>
+        <button id="goihamchecklancuoi" type="button" style="display:none"></button>
+        <button id="vohieuhoabtn" type="button" style="display:none"></button>*@
     @*<button id="xanhdo" type="button" style="display:none"></button>*@
 </body>
 
@@ -199,6 +200,7 @@
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/jshub.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
 
 <script>
     var players = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.players));
@@ -232,7 +234,7 @@
             $('#theloaicauhoi').html(theloaicauhoi);
 
             var questionHtml = "";
-            questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+            questionHtml += "<p id=\"pcauhoi\" style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
             questionHtml += question.NoiDung;
             questionHtml += "</p>";
             $('#question-containers').html(questionHtml);
@@ -245,6 +247,7 @@
 
 
             //lấy đáp án
+            var pquestion = document.getElementById("pcauhoi");
 
             setTimeout(function () {
                 canCall = true;
@@ -256,6 +259,9 @@
                 }
                 var time22 = time2;
                 time2 = 0.0;
+
+                pquestion.innerHTML += "<br><br>" + "ĐÁP ÁN: " + question.DapAn.toUpperCase();
+
                 $('#submitButton3').trigger('click', [idcauhoi, time22]);
             }, 30000);
             // End of your code
@@ -291,6 +297,20 @@
     $('#hienthicauhoitieptheo').click(function (event, slg) {
         var indexcauhoi = parseInt(slg)
         hienthicauhoi(indexcauhoi);
+    });
+
+    $('#chuyensangvong4').click(function (event, slg) {
+        var phongchoid = @ViewBag.phongdauid;
+        setTimeout(function () {
+            axios.post(`/phongcho/NavigateToResult?phongchoid=${phongchoid}&vongdau=3`)
+                .then(function (response) {
+                    //làm gì đóoo
+                    console.log("số lần gọi: " + solangoi1);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }, 3000);
     });
 
     // Lấy thẻ input có id là answerInput

@@ -36,6 +36,101 @@ namespace Do_An_Tot_Nghiep.Controllers
             return View(await dbKA.ToListAsync());
         }
 
+        //Create
+        [HttpPost]
+        public async Task<IActionResult> CreatePhong()
+        {
+            var user = _userManager.GetUserName(User);
+
+            PhongCho pc = new PhongCho();
+            pc.NguoiDungId = await _context.TaiKhoans.Where(x => x.TenDangNhap == user)
+                .Select(x => x.NguoiDungId).FirstOrDefaultAsync();
+            pc.SoLuongNguoi = 0;
+            pc.ThoiGianLap = DateTime.Now;
+
+            _context.Add(pc);
+            await _context.SaveChangesAsync();
+
+            DateTime tgl = (DateTime) pc.ThoiGianLap;
+            int pcid = await _context.PhongChos.Where(x => x.NguoiDungId == pc.NguoiDungId && x.ThoiGianLap == tgl)
+                .Select(x => x.PhongChoId).FirstOrDefaultAsync();
+
+            int phongChoId = pcid;
+            ConnectedUser.UpdateCurrentRoom(user, phongChoId.ToString());
+            var userroom = ConnectedUser.Ids.FirstOrDefault(x => x.UserName == user);
+
+            await _signalrHub.Groups.AddToGroupAsync(userroom.ConnectionId, phongChoId.ToString());
+
+            var userId = await _context.TaiKhoans
+                .FirstOrDefaultAsync(pc => pc.TenDangNhap == user);
+            var phongCho = await _context.PhongChos.Include(pc => pc.NguoiDung)
+                .FirstOrDefaultAsync(pc => pc.PhongChoId == phongChoId);
+            if (phongCho != null && phongCho.SoLuongNguoi < 4)
+            {
+                ChiTietPhongCho ctpc = new ChiTietPhongCho();
+                ctpc.PhongChoId = phongChoId;
+                ctpc.NguoiDungId = userId.TaiKhoanId;
+                ctpc.ThoiGianVao = DateTime.Now;
+                _context.Add(ctpc);
+                phongCho.SoLuongNguoi++;
+                await _context.SaveChangesAsync();
+
+                // Gửi thông điệp đến tất cả các kết nối trong phòng chờ để thông báo rằng có một người dùng mới đã tham gia vào phòng chờ
+                //await _signalrHub.Clients.Group(/*phongCho.PhongChoId.ToString()*/"1").SendAsync("NewUserJoined", user);
+                var username = await _context.TaiKhoans
+                .Include(pc => pc.NguoiDung)
+                .Where(pc => pc.TenDangNhap == user)
+                .Select(pc => pc.NguoiDung.HoVaTen)
+                .FirstOrDefaultAsync();
+
+                var ctpd = await _context.ChiTietPhongChos
+                .Include(x => x.PhongCho)
+                .Include(x => x.NguoiDung)
+                .Where(x => x.PhongChoId == phongChoId)
+                .ToListAsync();
+
+                string html = "";
+                int i = 0;
+
+                foreach (var ct in ctpd)
+                {
+                    i++;
+                    html += "<div style=\"margin-top: 15px; width: 50px; height: 50px;\">";
+                    html += "<img id=\"nguoiso";
+                    html += i;
+                    html += "\"style=\"position: absolute; margin-left: 30px; width: 45px; height: 45px\" src=\"\"/>";
+                    html += "<p style=\"position: absolute; margin-left: 100px; margin-right: 35px; font-size: 12px\">" +
+                        ct.NguoiDung.HoVaTen.ToUpper() +
+                        "</p>";
+                    html += "<span style=\"position: absolute; margin-left: 370px; margin-top:10px; text-align: center; font-size: 12px\">" + "</span>";
+                    html += "</div>";
+                }
+                ViewBag.htmlne = html;
+
+                var anh = await _context.ChiTietPhongChos
+                            .Include(x => x.PhongCho)
+                            .Include(x => x.NguoiDung)
+                            .Where(x => x.PhongChoId == phongChoId)
+                            .Select(x => x.NguoiDung.Avatar)
+                            .ToListAsync();
+
+                ViewBag.anh = anh;
+
+                var htmlne = System.Text.Json.JsonSerializer.Serialize(html);
+                var anhava = System.Text.Json.JsonSerializer.Serialize(anh);
+
+                int slnguoi = anh.Count;
+
+                await _signalrHub.Clients.Group(phongCho.PhongChoId.ToString()).SendAsync("NewUserJoined", username, htmlne, anhava, slnguoi);
+                // Chuyển hướng đến trang Room
+                return RedirectToAction("Room", new { phongChoId });
+            }
+            else
+            {
+                return Ok();
+            }
+        }
+
         //Join
         [HttpPost]
         public async Task<IActionResult> Join(int phongChoId)
@@ -61,52 +156,120 @@ namespace Do_An_Tot_Nghiep.Controllers
                 ctpc.NguoiDungId = userId.TaiKhoanId;
                 ctpc.ThoiGianVao = DateTime.Now;
                 _context.Add(ctpc);
+                phongCho.SoLuongNguoi++;
                 await _context.SaveChangesAsync();
 
                 // Gửi thông điệp đến tất cả các kết nối trong phòng chờ để thông báo rằng có một người dùng mới đã tham gia vào phòng chờ
                 //await _signalrHub.Clients.Group(/*phongCho.PhongChoId.ToString()*/"1").SendAsync("NewUserJoined", user);
-            }
-
-            
-
-            var username = await _context.TaiKhoans
+                var username = await _context.TaiKhoans
                 .Include(pc => pc.NguoiDung)
                 .Where(pc => pc.TenDangNhap == user)
                 .Select(pc => pc.NguoiDung.HoVaTen)
                 .FirstOrDefaultAsync();
 
-            await _signalrHub.Clients.Group(phongCho.PhongChoId.ToString()).SendAsync("NewUserJoined", username);
-            // Chuyển hướng đến trang Room
-            return RedirectToAction("Room", new { phongChoId });
+                var ctpd = await _context.ChiTietPhongChos
+                .Include(x => x.PhongCho)
+                .Include(x => x.NguoiDung)
+                .Where(x => x.PhongChoId == phongChoId)
+                .ToListAsync();
+
+                string html = "";
+                int i = 0;
+
+                foreach (var ct in ctpd)
+                {
+                    i++;
+                    html += "<div style=\"margin-top: 15px; width: 50px; height: 50px;\">";
+                    html += "<img id=\"nguoiso";
+                    html += i;
+                    html += "\"style=\"position: absolute; margin-left: 30px; width: 45px; height: 45px\" src=\"\"/>";
+                    html += "<p style=\"position: absolute; margin-left: 100px; margin-right: 35px; font-size: 12px\">" +
+                        ct.NguoiDung.HoVaTen.ToUpper() +
+                        "</p>";
+                    html += "<span style=\"position: absolute; margin-left: 370px; margin-top:10px; text-align: center; font-size: 12px\">" + "</span>";
+                    html += "</div>";
+                }
+                ViewBag.htmlne = html;
+
+                var anh = await _context.ChiTietPhongChos
+                            .Include(x => x.PhongCho)
+                            .Include(x => x.NguoiDung)
+                            .Where(x => x.PhongChoId == phongChoId)
+                            .Select(x => x.NguoiDung.Avatar)
+                            .ToListAsync();
+
+                ViewBag.anh = anh;
+
+                var htmlne = System.Text.Json.JsonSerializer.Serialize(html);
+                var anhava = System.Text.Json.JsonSerializer.Serialize(anh);
+
+                int slnguoi = anh.Count;
+
+                await _signalrHub.Clients.Group(phongCho.PhongChoId.ToString()).SendAsync("NewUserJoined", username, htmlne, anhava, slnguoi);
+                // Chuyển hướng đến trang Room
+                return RedirectToAction("Room", new { phongChoId });
+            }
+            else
+            {
+                return Ok();
+            }    
         }
 
 
         //Room
         public async Task<IActionResult> Room(int phongChoId)
         {
-            // Lấy thông tin phong cho
-            var phongcho = await _context.PhongChos
-                    .FirstOrDefaultAsync(pc => pc.PhongChoId == phongChoId);
-
-            // Lấy danh sách người dùng trong phòng chờ
-            var nguoiDung = await _context.ChiTietPhongChos
-                    .Include(pc => pc.PhongCho)
-                    .Include(pc => pc.NguoiDung)
-                    .Where(pc=>pc.PhongChoId == phongChoId)
-                    .Select(pc => pc.NguoiDung.HoVaTen)
-                    .ToListAsync();
-
-            // Truyền danh sách người dùng và thông tin phòng chờ vào view để hiển thị
-            ViewBag.NguoiDung = nguoiDung;
-            ViewBag.PhongCho = phongcho;
-
-            
             var user = _userManager.GetUserName(User);
-            var username = await _context.TaiKhoans
-                .Include(pc => pc.NguoiDung)
-                .Where(pc => pc.TenDangNhap == user)
-                .Select(pc => pc.NguoiDung.HoVaTen)
-                .FirstOrDefaultAsync();       
+
+            var IdUser = await _context.TaiKhoans.Include(x => x.NguoiDung)
+                            .Where(x => x.TenDangNhap == user)
+                            .Select(x => x.NguoiDungId)
+                            .FirstOrDefaultAsync();
+            ViewBag.playerid = IdUser;
+            var ctpd = await _context.ChiTietPhongChos
+                        .Include(x => x.PhongCho)
+                        .Include(x => x.NguoiDung)
+                        .Where(x => x.PhongChoId == phongChoId)
+                        .ToListAsync();
+
+            string html = "";
+            int i = 0;
+
+            foreach (var ct in ctpd)
+            {
+                i++;
+                html += "<div style=\"margin-top: 15px; width: 50px; height: 50px;\">";
+                html += "<img id=\"nguoiso";
+                html += i;
+                html += "\"style=\"position: absolute; margin-left: 30px; width: 45px; height: 45px\" src=\"\"/>";
+                html += "<p style=\"position: absolute; margin-left: 100px; margin-right: 35px; font-size: 12px\">" +
+                    ct.NguoiDung.HoVaTen.ToUpper() +
+                    "</p>";
+                html += "<span style=\"position: absolute; margin-left: 370px; margin-top:10px; text-align: center; font-size: 12px\">" + "</span>";
+                html += "</div>";
+            }
+            ViewBag.htmlne = html;
+
+            var anh = await _context.ChiTietPhongChos
+                        .Include(x => x.PhongCho)
+                        .Include(x => x.NguoiDung)
+                        .Where(x => x.PhongChoId == phongChoId)
+                        .Select(x => x.NguoiDung.Avatar)
+                        .ToListAsync();
+
+            ViewBag.anh = anh;
+
+            var chuphong = await _context.PhongChos.Where(x => x.PhongChoId == phongChoId)
+                .Select(x => x.NguoiDung.HoVaTen).FirstOrDefaultAsync();
+
+            var chuphong2 = await _context.PhongChos.Where(x => x.PhongChoId == phongChoId)
+                .Select(x => x.NguoiDungId).FirstOrDefaultAsync();
+            ViewBag.chuphong = chuphong;
+            ViewBag.phongdauso = phongChoId;
+            ViewBag.idchuphong = chuphong2;
+
+            int slnguoi = anh.Count;
+            ViewBag.slnguoi = slnguoi;
             return View();
         }
 
@@ -157,11 +320,344 @@ namespace Do_An_Tot_Nghiep.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> NavigateToResult(int phongchoid, int vongdau)
+        {
+            var ctpd = await _context.ChiTietPhongDaus
+                        .Include(x => x.PhongDau)
+                        .Include(x => x.NguoiDung)
+                        .Where(x => x.PhongDauId == phongchoid)
+                        .ToListAsync();
+            
+            foreach(var ct in ctpd)
+            {
+                ChiTietTungVongDau cttvd = new ChiTietTungVongDau();
+                cttvd.PhongDauId = phongchoid;
+                cttvd.VongChoi = vongdau;
+                cttvd.NguoiDungId = ct.NguoiDungId;
+                cttvd.Diem = ct.TongDiem;
 
+                _context.Add(cttvd);
+                await _context.SaveChangesAsync();
+            }    
+
+            string groupName = phongchoid.ToString();
+
+            var ctpd2 = ctpd.OrderByDescending(x => x.TongDiem).ToList();
+            List<int> diem = new List<int>();
+            if (vongdau == 4)
+            {
+                if (ctpd2[0].TongDiem >= 300)
+                {
+                    diem.Add(150);
+                }
+                else if (ctpd2[0].TongDiem > 0)
+                {
+                    diem.Add(100);
+                }
+                else
+                {
+                    diem.Add(0);
+                }
+                if (ctpd2[1].TongDiem >= 200)
+                {
+                    diem.Add(80);
+                }
+                else if (ctpd2[1].TongDiem > 0)
+                {
+                    diem.Add(60);
+                }
+                else
+                {
+                    diem.Add(0);
+                }
+                if (ctpd2[2].TongDiem > 150)
+                {
+                    diem.Add(50);
+                }
+                else if (ctpd2[2].TongDiem > 0)
+                {
+                    diem.Add(30);
+                }
+                else
+                {
+                    diem.Add(0);
+                }
+                if (ctpd2[3].TongDiem > 100)
+                {
+                    diem.Add(20);
+                }
+                else if (ctpd2[3].TongDiem > 0)
+                {
+                    diem.Add(10);
+                }
+                else
+                {
+                    diem.Add(0);
+                }
+
+                
+            }    
+            string absoluteUrl = Url.Action("ThongKeKetQua", "PhongCho", new { phongdauid = phongchoid, vongdau = vongdau }, Request.Scheme);
+            await _signalrHub.Clients.Group(groupName).SendAsync("navigateToPage1", absoluteUrl);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> NavigateToChat(int phongchoid, int vongdau)
+        {
+            string groupName = phongchoid.ToString();
+            string absoluteUrl = Url.Action("PhongChat", "PhongCho", new { phongdauid = phongchoid, vongdau = vongdau }, Request.Scheme);
+            await _signalrHub.Clients.Group(groupName).SendAsync("navigateToPage1", absoluteUrl);
+            return Ok();
+        }
+
+        public async Task<IActionResult> ThongKeKetQua(int phongdauid, int vongdau)
+        {
+            var ctpd = await _context.ChiTietPhongDaus
+                        .Include(x => x.PhongDau)
+                        .Include(x => x.NguoiDung)
+                        .Where(x => x.PhongDauId == phongdauid)
+                        .OrderByDescending(x=> x.TongDiem)
+                        .ToListAsync();
+
+
+            string html = "";
+            int i = 0;
+
+            foreach(var ct in ctpd)
+            {
+                i++;
+                html += "<div class=\"box\" style=\"width: 400px; height: 90px; margin-left: 565px; margin-top: 70px; border: solid 2px white;\">";
+                html += "<img id=\"nguoiso";
+                html += i;
+                html += "\"style=\"margin-left: 15px;\" width=\"60\" height=\"60\" src=\"\"/>";
+                html += "<p style=\"position: absolute; margin-left: 145px; margin-right: 35px; font-size: 12px\">" +
+                    ct.NguoiDung.HoVaTen.ToUpper() +
+                    "</p>";
+                html += "<span style=\"text-align:center ;font-size: 12px\">" +
+                    ct.TongDiem +
+                    "</span>";
+                html += "<p id=\"dnl" + i + "\" style=\"position: absolute; margin-left: 450px; \"></p>";
+                html += "</div>";
+            }
+            ViewBag.htmlne = html;
+
+            var anh = await _context.ChiTietPhongDaus
+                        .Include(x => x.PhongDau)
+                        .Include(x => x.NguoiDung)
+                        .Where(x => x.PhongDauId == phongdauid)
+                        .OrderByDescending(x => x.TongDiem)
+                        .Select(x=> x.NguoiDung.Avatar)
+                        .ToListAsync();
+
+            ViewBag.anh = anh;
+
+            ViewBag.phongdauso = phongdauid;
+
+            ViewBag.vongdau = vongdau;
+
+            //cộng điểm năng lực
+
+            int diem1 = 0, diem2 = 0, diem3 = 0, diem4 = 0;
+
+            var ctpd2 = ctpd;
+
+            List<int> diem = new List<int>();
+            if (vongdau == 4)
+            {
+                if (ctpd2[0].TongDiem >= 300)
+                {
+                    diem.Add(150);
+                }
+                else if (ctpd2[0].TongDiem > 0)
+                {
+                    diem.Add(100);
+                }
+                else
+                {
+                    diem.Add(0);
+                }
+                if (ctpd2[1].TongDiem >= 200)
+                {
+                    diem.Add(80);
+                }
+                else if (ctpd2[1].TongDiem > 0)
+                {
+                    diem.Add(60);
+                }
+                else
+                {
+                    diem.Add(0);
+                }
+                if (ctpd2[2].TongDiem > 150)
+                {
+                    diem.Add(50);
+                }
+                else if (ctpd2[2].TongDiem > 0)
+                {
+                    diem.Add(30);
+                }
+                else
+                {
+                    diem.Add(0);
+                }
+                if (ctpd2[3].TongDiem > 100)
+                {
+                    diem.Add(20);
+                }
+                else if (ctpd2[3].TongDiem > 0)
+                {
+                    diem.Add(10);
+                }
+                else
+                {
+                    diem.Add(0);
+                }
+
+            var user = _userManager.GetUserName(User);
+                var IdUser = await _context.TaiKhoans.Include(x => x.NguoiDung)
+                                .Where(x => x.TenDangNhap == user)
+                                .Select(x => x.NguoiDungId)
+                                .FirstOrDefaultAsync();
+
+                for (int j = 0; j < 4; j++)
+                {
+                    if (IdUser == ctpd2[j].NguoiDungId)
+                    {
+                        var xh = await _context.XepHangs.Where(x => x.NguoiDungId == ctpd2[j].NguoiDungId).FirstOrDefaultAsync();
+                        xh.DiemNangLuc += diem[j];
+
+                        if (xh.DiemNangLuc >= 500 && xh.DiemNangLuc < 1500)
+                        {
+                            xh.BacXepHangId = 2;
+                        }
+                        else if (xh.DiemNangLuc >= 1500)
+                        {
+                            xh.BacXepHangId = 3;
+                        }
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                diem1 = diem[0];
+                diem2 = diem[1];
+                diem3 = diem[2];
+                diem4 = diem[3];
+            }
+        
+            ViewBag.diem1 = diem1;
+            ViewBag.diem2 = diem2;
+            ViewBag.diem3 = diem3;
+            ViewBag.diem4 = diem4;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateTinNhan(int phongdauid, int playerid, string mess)
+        {
+            string groupName = phongdauid.ToString();
+            string hoten = await _context.TaiKhoans.Where(x => x.NguoiDungId == playerid)
+                .Select(x => x.NguoiDung.HoVaTen).FirstOrDefaultAsync();
+            string htmlmess = "";
+            htmlmess += "<li style=\"margin-left:20px; letter-spacing: 0.1em; margin-top:10px\">" + hoten + ": " + mess + "</ li >";
+
+            await _signalrHub.Clients.Group(groupName).SendAsync("updatemess", htmlmess);
+            return Ok();
+        }
+
+        public async Task<IActionResult> PhongChat(int phongdauid, int vongdau)
+        {
+            var user = _userManager.GetUserName(User);
+
+            var IdUser = await _context.TaiKhoans.Include(x => x.NguoiDung)
+                            .Where(x => x.TenDangNhap == user)
+                            .Select(x => x.NguoiDungId)
+                            .FirstOrDefaultAsync();
+            ViewBag.playerid = IdUser;
+            var ctpd = await _context.ChiTietPhongDaus
+                        .Include(x => x.PhongDau)
+                        .Include(x => x.NguoiDung)
+                        .Where(x => x.PhongDauId == phongdauid)
+                        .OrderByDescending(x => x.TongDiem)
+                        .ToListAsync();
+
+            string html = "";
+            int i = 0;
+
+            foreach (var ct in ctpd)
+            {
+                i++;
+                html += "<div style=\"margin-top: 15px; width: 50px; height: 50px;\">";
+                html += "<img id=\"nguoiso";
+                html += i;
+                html += "\"style=\"position: absolute; margin-left: 30px; width: 45px; height: 45px\" src=\"\"/>";
+                html += "<p style=\"position: absolute; margin-left: 100px; margin-right: 35px; font-size: 12px\">" +
+                    ct.NguoiDung.HoVaTen.ToUpper() +
+                    "</p>";
+                html += "<span style=\"position: absolute; margin-left: 370px; margin-top:10px; text-align: center; font-size: 12px\">" +
+                    ct.TongDiem +
+                    "</span>";
+                html += "</div>";
+            }
+            ViewBag.htmlne = html;
+
+            var anh = await _context.ChiTietPhongDaus
+                        .Include(x => x.PhongDau)
+                        .Include(x => x.NguoiDung)
+                        .Where(x => x.PhongDauId == phongdauid)
+                        .OrderByDescending(x => x.TongDiem)
+                        .Select(x => x.NguoiDung.Avatar)
+                        .ToListAsync();
+
+            ViewBag.anh = anh;
+
+            var chuphong = await _context.PhongDaus.Where(x => x.PhongDauId == phongdauid)
+                .Select(x => x.NguoiDung.HoVaTen).FirstOrDefaultAsync();
+            ViewBag.chuphong = chuphong;
+            ViewBag.phongdauso = phongdauid;
+
+            string vongsau="";
+
+            if(vongdau==1)
+            {
+                vongsau = "BẮT ĐẦU CHƯỚNG NGẠI VẬT SAU: ";
+            }
+            if (vongdau == 2)
+            {
+                vongsau = "BẮT ĐẦU TĂNG TỐC SAU: ";
+            }
+            if (vongdau == 3)
+            {
+                vongsau = "BẮT ĐẦU VỀ ĐÍCH SAU: ";
+            }
+
+            ViewBag.vongsau = vongsau;
+            ViewBag.vongdau = vongdau;
+
+
+            return View();
+        }
         public async Task<IActionResult> NavigateToPage2(int phongchoid)
         {
             string groupName = phongchoid.ToString();
+            string absoluteUrl = Url.Action("Vong2", "PhongCho", new { phongdauid = phongchoid }, Request.Scheme);
+            await _signalrHub.Clients.Group(groupName).SendAsync("navigateToPage1", absoluteUrl);
+            return Ok();
+        }
+
+        public async Task<IActionResult> NavigateToPage4(int phongchoid)
+        {
+            string groupName = phongchoid.ToString();
             string absoluteUrl = Url.Action("Vong4", "PhongCho", new { phongdauid = phongchoid }, Request.Scheme);
+            await _signalrHub.Clients.Group(groupName).SendAsync("navigateToPage1", absoluteUrl);
+            return Ok();
+        }
+
+        public async Task<IActionResult> NavigateToPage3(int phongchoid)
+        {
+            string groupName = phongchoid.ToString();
+            string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongchoid }, Request.Scheme);
             await _signalrHub.Clients.Group(groupName).SendAsync("navigateToPage1", absoluteUrl);
             return Ok();
         }
@@ -638,7 +1134,7 @@ namespace Do_An_Tot_Nghiep.Controllers
             }
             else
             {
-                ctpd.TongDiem = ctpd.TongDiem - diem;
+                ctpd.TongDiem = ctpd.TongDiem - diem/2;
                 if(ctpd.TongDiem < 0)
                 {
                     ctpd.TongDiem = 0;
@@ -828,7 +1324,7 @@ namespace Do_An_Tot_Nghiep.Controllers
                 {
                     html2 += "<p>" + "CHƯA TRẢ LỜI" + "</p>";
                 }
-                html2 += "<span> " + vithu.ToString() + " - "  + a.ThoiGian.ToString() + "s </span>";
+                html2 += "<span> " /*+ vithu.ToString() + " - "*/  + a.ThoiGian.ToString() + "s </span>";
                 html2 += "</div>";
             }
 
@@ -1047,8 +1543,7 @@ namespace Do_An_Tot_Nghiep.Controllers
                     await Task.Delay(10000);
 
                     //string absoluteUrl = Url.Action("Index", "PhongCho", Request.Scheme);
-                    string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongdauid }, Request.Scheme);
-                    await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
+                    await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage5", phongdauid, 2);
                 }
 
                 else if (checkcnv == "sai")
@@ -1113,6 +1608,7 @@ namespace Do_An_Tot_Nghiep.Controllers
                 if (answer == cauhoi.DapAn)
                 {
                     ctpd.TongDiem += 10;
+                    tlv2.Result = 1;
                 }
                 else
                 {
@@ -1183,6 +1679,7 @@ namespace Do_An_Tot_Nghiep.Controllers
 
                 var answerv22 = _context.TraLoiVong2s.Where(x => x.PhongDauId == phongdauid).OrderBy(x => x.PlayerId).ToList();
 
+                var results = answerv2.Where(x => x.Result == 1).FirstOrDefault();
 
                 //hienthiketqua
                 var html1 = "";
@@ -1208,7 +1705,6 @@ namespace Do_An_Tot_Nghiep.Controllers
                     html1 += "</div>";
                 }
 
-                var results = answerv2.Where(x => x.Result == 1).FirstOrDefault();
 
                 int result;
 
@@ -1329,23 +1825,20 @@ namespace Do_An_Tot_Nghiep.Controllers
             {
                 
                 await Task.Delay(10000);
-                string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongdauid }, Request.Scheme);
-                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage5", phongdauid, 2);
             }
             else if (chon == 4)
             {
                 
                 await Task.Delay(10000);
-                string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongdauid }, Request.Scheme);
-                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage5", phongdauid, 2);
 
             }
             else if (chon == 5)
             {
                 
                 await Task.Delay(10000);
-                string absoluteUrl = Url.Action("Vong3", "PhongCho", new { phongdauid = phongdauid }, Request.Scheme);
-                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage1", absoluteUrl);
+                await _signalrHub.Clients.Group(phongdauid.ToString()).SendAsync("navigateToPage5", phongdauid, 2);
             }
             return Ok();
         }

@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Do_An_Tot_Nghiep.Models.CauHoi>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<h3 style="margin-left: 30px">Manage question</h3>
+
+<p style="margin-left: 30px">
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table" style="color: white">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.VongCauHoi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NoiDung)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DapAn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoKyTu)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MucDo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Anh)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChuongNgaiVat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GoiCauHoi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LinhVuc)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VongCauHoi)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NoiDung)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DapAn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoKyTu)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MucDo)
+                </td>
+                <td>
+                    @*@Html.DisplayFor(modelItem => item.Anh)*@
+                    @if (item.Anh != null && item.Anh.Length > 0)
+                    {
+                        <img src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(item.Anh)}")" style="width: 192px; height: 116px;" />
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChuongNgaiVat.ChuongNgaiVatId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GoiCauHoi.GoiCauHoiId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LinhVuc.LinhVucId)
+                </td>
+                <td>
+                    <a style="color: white; background-color: darkred; border-radius: 4px" asp-action="Edit" asp-route-id="@item.CauHoiId">Edit</a> |
+                    <a style="color: white; background-color: darkred; border-radius: 4px" asp-action="Details" asp-route-id="@item.CauHoiId">Details</a> |
+                    <a style="color: white; background-color: darkred; border-radius: 4px" asp-action="Delete" asp-route-id="@item.CauHoiId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

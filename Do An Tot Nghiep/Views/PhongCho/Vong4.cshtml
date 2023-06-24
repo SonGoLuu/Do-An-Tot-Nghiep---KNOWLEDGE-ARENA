@@ -161,7 +161,7 @@
                 <p>@ViewBag.anhplayer[i].HoVaTen.ToUpper()</p>
                 <span>@player.TongDiem</span>
                 @{
-                i++;
+                    i++;
                 }
             </div>
         }
@@ -197,11 +197,14 @@
 
             </p>
 
-            @*<div class="box" style="width: 350px; margin-left: 1135px; position: absolute; bottom: 0px; margin-bottom: 1px; border: solid 2px white;">
-            <p style="text-align:center; margin-right:35px; font-size: 12px">TRẦN HUỲNH LƯU</p>
+            <img id="nshvok" src=""
+                 style="position: absolute; bottom: 200px; left: 300px ">
 
-            <span style="text-align:center ;font-size: 12px">CHIẾN KHU VIỆT BẮC</span>
-        </div>*@
+            @*<div class="box" style="width: 350px; margin-left: 1135px; position: absolute; bottom: 0px; margin-bottom: 1px; border: solid 2px white;">
+                    <p style="text-align:center; margin-right:35px; font-size: 12px">TRẦN HUỲNH LƯU</p>
+
+                    <span style="text-align:center ;font-size: 12px">CHIẾN KHU VIỆT BẮC</span>
+                </div>*@
         </div>
         <div id="donghocat" style="background-color: green; width: 35px; margin-right: 3px;"></div>
 
@@ -254,6 +257,8 @@
     <button id="chonnguoittl" type="button" style="display:none"></button>
     <button id="checkdapanttl" type="button" style="display:none"></button>
     <button id="khongaitraloi" type="button" style="display:none"></button>
+    <button id="thongbaoketthuc" type="button" style="display:none"></button>
+
     @*<button id="submitButton3" type="button" style="display:none">Kiểm tra câu trả lời</button>
         <button id="hienthicauhoitieptheo" type="button" style="display:none"></button>*@
     @*<button id="hienthiovuong" type="button" style="display:none"></button>
@@ -276,6 +281,8 @@
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/jshub.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
+
 
 <script>
     @*@using System.Text.Json;
@@ -549,7 +556,7 @@
         console.log("Điểm 1: " + diemcau1);
         console.log("Điểm 2: " + diemcau2);
         console.log("Điểm 3: " + diemcau3);
-        
+
 
         if (solangoicauhoiv4 == 1) {
             goicauhoi = diemcau1;
@@ -909,6 +916,19 @@
         });
             event.preventDefault();
         }
+    });
+
+    $('#thongbaoketthuc').click(function (event) {
+        var phongchoid = @ViewBag.phongdauid;
+        axios.post(`/phongcho/NavigateToResult?phongchoid=${phongchoid}&vongdau=4`)
+                .then(function (response) {
+                    //làm gì đóoo
+                    console.log("số lần gọi: " + solangoi1);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            event.preventDefault();
     });
 
     hienthichon(0);

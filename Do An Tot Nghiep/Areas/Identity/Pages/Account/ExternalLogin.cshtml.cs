@@ -6,12 +6,14 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Do_An_Tot_Nghiep.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Do_An_Tot_Nghiep.Areas.Identity.Pages.Account
@@ -23,17 +25,19 @@ namespace Do_An_Tot_Nghiep.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly dbKA _context;
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, dbKA context)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
 
         [BindProperty]
@@ -129,6 +133,35 @@ namespace Do_An_Tot_Nghiep.Areas.Identity.Pages.Account
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
+                        var checktk = await _context.TaiKhoans.Where(x => x.TenDangNhap == Input.Email).FirstOrDefaultAsync();
+
+                        if (checktk == null)
+                        {
+                            //Tạo mới người dùng
+                            var idlast = await _context.NguoiDungs.OrderByDescending(x => x.NguoiDungId).FirstOrDefaultAsync();
+                            int newid = idlast.NguoiDungId + 1;
+
+                            NguoiDung nd = new NguoiDung();
+                            nd.NguoiDungId = newid;
+                            nd.HoVaTen = "No name";
+                            _context.Add(nd);
+                            await _context.SaveChangesAsync();
+                            //Chỗ này là để add data vào bảng TaiKhoan
+                            TaiKhoan tk = new TaiKhoan();
+                            tk.TenDangNhap = Input.Email;
+                            tk.PhanQuyenId = 2;
+                            tk.NguoiDungId = newid;
+                            _context.Add(tk);
+                            await _context.SaveChangesAsync();
+
+                            XepHang xh = new XepHang();
+                            xh.NguoiDungId = newid;
+                            xh.DiemNangLuc = 0;
+                            xh.BacXepHangId = 1;
+                            _context.Add(xh);
+                            await _context.SaveChangesAsync();
+                        }
+
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
                         var userId = await _userManager.GetUserIdAsync(user);

@@ -4,17 +4,31 @@ var connection = new signalR.HubConnectionBuilder()
     .build();
 
 //file room
-connection.on("NewUserJoined", (userName) => {
+connection.on("NewUserJoined", (userName, htmlne, anhava, slnguoi) => {
     // Thêm người dùng mới vào danh sách người dùng và cập nhật giao diện
-    const userList = document.getElementById("user-list");
-    const listItem = document.createElement("LI");
-    listItem.textContent = userName;
-    userList.appendChild(listItem);
+    var html = JSON.parse(htmlne);
+    var anh = JSON.parse(anhava);
+    var div = document.getElementById("hienthiketquatungvong");
+    div.innerHTML = html;
+    for (var i = 0; i < slnguoi; i++) {
+        var j = i + 1;
+        var nguoiso = "#nguoiso" + j.toString();
+        $(nguoiso).attr("src", "data:image/png;base64," + anh[i]);
+    }
+    if (slnguoi == 4)
+    {
+        $('#hienthinutbatdau').trigger('click');
+    }
 });
 
 connection.on("navigateToPage", function (pageUrl) {
     // Chuyển hướng tới trang với đường dẫn pageUrl
     window.location.href = pageUrl;
+});
+
+connection.on("navigateToPage5", function (phongdauid, vongdau) {
+    // Chuyển hướng tới trang với đường dẫn pageUrl
+    $('#naviga').trigger('click', [phongdauid, vongdau]);
 });
 
 
@@ -24,8 +38,9 @@ connection.on("UpdateScore1", function (html) {
     $('#playerNscore1').html(html);
 });
 
+var iii = 0;
 connection.on("navigateToPage1", function (pageUrl) {
-    // Chuyển hướng tới trang với đường dẫn pageUrl
+    // Chuyển hướng tới trang với đường dẫn pageUrls
     window.location.href = pageUrl;
 });
 
@@ -81,6 +96,13 @@ connection.on("UpdateScore2", function (html) {
     $('#playerNscore2').empty();
     $('#playerNscore2').html(html);
 
+
+});
+
+connection.on("updatemess", function (htmlmess) {
+    // Lấy thẻ ul có id là "ulchat"
+    var ulElement = document.getElementById("ulchat");
+    ulElement.insertAdjacentHTML("beforeend", htmlmess);
 
 });
 
@@ -471,6 +493,7 @@ connection.on("NextQuestionV3", function (slg) {
         {
             //var url = '@Url.Action("Index", "PhongCho", new { scheme = Request.Scheme })';
             //window.location.assign(url);
+            $('#chuyensangvong4').trigger('click');
         }
         setTimeout(function () {
             canCallv3 = true;
@@ -530,6 +553,16 @@ connection.on("UpdateQuestionVong4", function (cauhoiv4, cauhoiso, checknshv) {
         var thediv = "divdiemcau" + cauhoiso.toString();
         var div = document.getElementById(thediv);
         div.style.backgroundColor = "green";
+
+
+        //nshv
+        if (checknshv == 1) {
+            $("#nshvok").attr("src", "/nshvgif.gif");
+        }
+        else
+        {
+            $("#nshvok").attr("src", "");
+        }
 
         //gọi hàm lấy đáp án
         var idcauhoi = parseInt(question.CauHoiId);
@@ -640,17 +673,8 @@ connection.on("NextQuestion4", function (solangoicauhoi, solangoi)
 {
     if (solangoicauhoi == 3 && solangoi == 4) {
         setTimeout(function () {
-            /*var url = '@Url.Action("Index", "PhongCho", new { scheme = Request.Scheme })';*/
-            //var url = 'Index';
-            //window.location.assign(url);
-            var url = "@Url.Action(\"Index\", \"PhongCho\", new { scheme = Request.Scheme })";
-            window.location.assign(url);
-            //var number = 123; // giá trị của biến int number
-
-            //var url = "/PhongCho/CheckKetQua?idphong=" + number;
-
-            //window.location.assign(url);
-        }, 5000);
+            $('#thongbaoketthuc').trigger('click');
+        }, 2000);
     }
     else
     {

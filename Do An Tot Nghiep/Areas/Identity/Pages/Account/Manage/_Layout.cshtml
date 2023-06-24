@@ -1,29 +1,26 @@
 ﻿@{
-    if (ViewData.TryGetValue("ParentLayout", out var parentLayout))
-    {
-        Layout = (string)parentLayout;
-    }
-    else
-    {
-        Layout = "/Areas/Identity/Pages/_Layout.cshtml";
-    }
+
+    //{
+    //    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+    //}
+    Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Manage your account</h2>
-
-<div>
-    <h4>Change your account settings</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
-            <partial name="_ManageNav" />
+        <div style="margin-left:190px; height: 600px">
+            <p style="font-family: 'Montserrat', sans-serif; color: whitesmoke; font-weight: bold; font-size: 22px ">
+                Chỉnh sửa thông tin tài khoản
+            </p>
+            <hr />
+            <div class="row">
+                <div class="col-md-3">
+                    <partial name="_ManageNav" />
+                </div>
+                <div class="col-md-9">
+                    @RenderBody()
+                </div>
+            </div>
         </div>
-        <div class="col-md-9">
-            @RenderBody()
-        </div>
-    </div>
-</div>
 
-@section Scripts {
-    @RenderSection("Scripts", required: false)
-}
+        @section Scripts {
+            @RenderSection("Scripts", required: false)
+        }

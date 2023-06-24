@@ -1,30 +1,69 @@
 ﻿@page
-<div class="container">
-    <div class="row p-1">
-        <div class="col-1">User @ViewBag.userName</div>
-        <div class="col-5"><input type="text" id="userInput" /></div>
-    </div>
-    <div class="row p-1">
-        <div class="col-1">Message</div>
-        <div class="col-5"><input type="text" class="w-100" id="messageInput" /></div>
-    </div>
-    <div class="row p-1">
-        <div class="col-6 text-end">
-            <input type="button" id="sendButton" value="Send Message" />
-        </div>
-    </div>
-    <div class="row p-1">
-        <div class="col-6">
-            <hr />
-        </div>
-    </div>
-    <div class="row p-1">
-        <div class="col-6">
-            <ul id="messagesList"></ul>
-        </div>
-    </div>
-</div>
-<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/jshub.js"></script>
-@*<script src="~/js/phongcho.js"></script>*@
+        <section class="banner-section">
+            <div class="container">
+                @*<div class="row">
+            <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 text-lg-left text-center">
+                <div class="banner-section-content" >
+                    <h1 style="opacity:1" data-aos="fade-up">Trần Huỳnh Lưu</h1>
+                    <p style="opacity:1" data-aos="fade-right">
+                        Duis au
+                    </p>
+                    <div class="btn_wrapper" data-aos="fade-down">
+                        <a style="opacity:1" class="text-decoration-none readmore_btn" href="./about.html">Read More</a>
+                        <a style="opacity:1" class="text-decoration-none joinus_btn" href="./signup.html">Join Us</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12"></div>
+        </div>*@
+                <div class="containercenter" style="position: relative;">
+                    <div id="hienthianh" class="box-center" style="text-align: center;">
+                        @if (ViewBag.playerid != null)
+                        {
+                            if (ViewBag.anhplayer.Avatar == null)
+                            {
+                                <img id="my-gif" style="position: absolute; width: 142px; height: 142px; border: none; top: 91px; left: 483px; z-index: 1; "
+                                     src="/avanew.png" />
+                                <img id="my-gif2" style="position: absolute; width: 320px; height: 320px; border: none; top: 0px; left: 395px; z-index: 2; "
+                                     src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.anhframe)}")" />
+
+                            }
+                            else
+                            {
+                                @if (ViewBag.idbxh == 3)
+                                {
+                                    <img id="my-gif" style="position: absolute; width: 128px; height: 128px; border: none; top: 43px; left: 493px; z-index: 1; "
+                                         src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.anhplayer.Avatar)}")" />
+                                    <img id="my-gif2" style="position: absolute; width: 280px; height: 280px; border: none; top: 0px; left: 420px; z-index: 2; "
+                                         src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.anhframe)}")" />
+                                    //85 - 205
+                                }
+                                else
+                                {
+                                    <img id="my-gif" style="position: absolute; width: 142px; height: 142px; border: none; top: 91px; left: 483px; z-index: 1; "
+                                         src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.anhplayer.Avatar)}")" />
+                                    <img id="my-gif2" style="position: absolute; width: 320px; height: 320px; border: none; top: 0px; left: 395px; z-index: 2; "
+                                         src="@Url.Content($"data:image/png;base64,{Convert.ToBase64String(ViewBag.anhframe)}")" />
+                                    //75 - 205
+
+                                }
+                            }
+
+                            <p id="nguoidangvedich" style="padding-top: 300px; padding-left: 110px; font-family: 'Montserrat', sans-serif; color: whitesmoke; font-weight: bold; font-size: 18px ">
+                                @ViewBag.anhplayer.HoVaTen.ToUpper()
+                                <br />
+                                @ViewBag.bachang.ToUpper() - @ViewBag.diemnangluc ĐIỂM
+                            </p>
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    
+    <script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/jshub.js"></script>
+    @*<script src="~/js/phongcho.js"></script>*@

@@ -5,44 +5,44 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div style="height: 750px;">
+    <h3 style="margin-left: 20px">Ranking</h3>
+    <table class="table" style="color: white">
+        <thead>
+            <tr>
+                <th>
+                    ID Player
+                </th>
+                <th>
+                    FullName
+                </th>
+                <th>
+                    Rank
+                </th>
+                <th>
+                    Score
+                </th>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DiemNangLuc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BacXepHang)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NguoiDung)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DiemNangLuc)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BacXepHang.BacXepHangId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NguoiDung.NguoiDungId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.XepHangId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.XepHangId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.XepHangId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NguoiDung.NguoiDungId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NguoiDung.HoVaTen)
+                </td>
+                <td style="color: darkblue">
+                    @Html.DisplayFor(modelItem => item.BacXepHang.BacHang)
+                </td>
+                <td style="color: darkblue">
+                    @Html.DisplayFor(modelItem => item.DiemNangLuc)
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    </div>

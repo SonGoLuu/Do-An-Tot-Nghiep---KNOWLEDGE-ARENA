@@ -1,0 +1,68 @@
+h1{
+    font-family: 'Teko', sans-serif;
+    font-size: 98px;
+    line-height: 89px;
+    font-weight: 600;
+    color: var(--e-global-color-primary);
+}
+
+h2{
+    font-family: 'Teko', sans-serif;
+    font-weight: 500;
+    font-size: 60px;
+    line-height: 65px;
+    color: var(--e-global-color-primary);
+}
+    
+h3{
+    font-family: 'Teko', sans-serif;
+    font-weight: 400;
+    font-size: 50px;
+    line-height: 65px;
+    color: var(--e-global-color-primary);
+}
+
+h4{
+    font-family: 'Teko', sans-serif;
+    font-weight: 500;
+    font-size: 48px;
+    line-height: 65px;
+    color: var(--e-global-color-primary);
+}
+
+h5{
+    font-family: 'Teko', sans-serif;
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 89px;
+    color: var(--e-global-color-primary);
+}
+
+h6{
+    font-family: 'Teko', sans-serif;
+    font-weight: 300;
+    font-size: 38px;
+    line-height: 30px;
+    color: var(--e-global-color-primary);
+}
+
+p{
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 36px;
+    color: var(--e-global-color-text);
+}
+
+.pp{
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 35px;
+    color: var(--e-global-color-text);
+}
+
+.sub_p{
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 30px;
+    color: var(--e-global-color-text);
+}

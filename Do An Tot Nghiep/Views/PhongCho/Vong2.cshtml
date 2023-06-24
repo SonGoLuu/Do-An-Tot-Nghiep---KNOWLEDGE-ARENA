@@ -236,6 +236,7 @@
     <button id="kiemtrasau10s" type="button" style="display:none"></button>
     <button id="goihamchecklancuoi" type="button" style="display:none"></button>
     <button id="vohieuhoabtn" type="button" style="display:none"></button>
+    <button id="naviga" type="button" style="display:none"></button>
     @*<button id="xanhdo" type="button" style="display:none"></button>*@
 </body>
 
@@ -523,6 +524,22 @@
         }
     });
 
+    $('#naviga').click(function (event, phongdauid, vongdau)
+    {
+        var url = '@Url.Action("NavigateToResult", "PhongCho")';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { phongchoid: phongdauid, vongdau: vongdau },
+            success: function (result) {
+                console.log("gọi checkanswer3 thành công");
+                console.log("vòng đấu:" + vongdau);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
 
     hienthichon(0);
 </script>

@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Do_An_Tot_Nghiep.Models.PhongCho>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<h3 style="margin-left: 30px">Manage phongcho</h3>
+
+<p style="margin-left: 30px">
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table" style="color: white">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SoLuongNguoi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ThoiGianLap)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NguoiDung)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLuongNguoi)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ThoiGianLap)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NguoiDung.NguoiDungId)
+                </td>
+                <td>
+                    <a style="color: white; background-color: darkred; border-radius: 4px" asp-action="Edit" asp-route-id="@item.PhongChoId">Edit</a> |
+                    <a style="color: white; background-color: darkred; border-radius: 4px"asp-action="Details" asp-route-id="@item.PhongChoId">Details</a> |
+                    <a style="color: white; background-color: darkred; border-radius: 4px"asp-action="Delete" asp-route-id="@item.PhongChoId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

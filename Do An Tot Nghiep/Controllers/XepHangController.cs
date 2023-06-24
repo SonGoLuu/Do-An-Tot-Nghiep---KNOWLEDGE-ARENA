@@ -21,7 +21,8 @@ namespace Do_An_Tot_Nghiep.Controllers
         // GET: XepHang
         public async Task<IActionResult> Index()
         {
-            var dbKA = _context.XepHangs.Include(x => x.BacXepHang).Include(x => x.NguoiDung);
+            var dbKA = _context.XepHangs.Include(x => x.BacXepHang).Include(x => x.NguoiDung)
+                .OrderByDescending(x=> x.DiemNangLuc) ;
             return View(await dbKA.ToListAsync());
         }
 

@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Do_An_Tot_Nghiep.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Do_An_Tot_Nghiep.Areas.Identity.Pages.Account
 {
@@ -20,14 +22,16 @@ namespace Do_An_Tot_Nghiep.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly dbKA _context;
 
         public LoginModel(SignInManager<IdentityUser> signInManager, 
             ILogger<LoginModel> logger,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager, dbKA context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _context = context;
         }
 
         [BindProperty]
@@ -85,7 +89,19 @@ namespace Do_An_Tot_Nghiep.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+
+                    var user = Input.Email;
+
+                    var tkpq = await _context.TaiKhoans.Where(x => x.TenDangNhap == user)
+                        .Select(x => x.PhanQuyenId).FirstOrDefaultAsync();
+                    if (tkpq == 1)
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }    
+                    else
+                    {
+                        return LocalRedirect(returnUrl);
+                    }      
                 }
                 if (result.RequiresTwoFactor)
                 {

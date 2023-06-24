@@ -8,7 +8,8 @@
 
 <head>
 
-    <title>Example</title>
+    <title>Vòng 1 - Khởi động</title>
+    <link rel="stylesheet" href="/css/site.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -112,11 +113,6 @@
                 text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
             }
 
-        #donghocat1 {
-            background: linear-gradient(to bottom, green, red);
-            background-size: 200% 200%;
-            background-position: top center;
-        }
     </style>
 
 </head>
@@ -136,9 +132,8 @@
 
     </div>
     <div class="containercenter">
-        <div class="box-center"><p style="color: white">Đây là phòng @ViewBag.phongdauid</p></div>
-        <div id="donghocat1" style="background-color: aliceblue; width: 35px; margin-right: 3px;">
-        </div>
+        <div class="box-center"></div>
+        <div id="donghocat" style="background-color: green; width: 35px; margin-right: 3px;"></div>
     </div>
 
     <div class="container" style="padding-top: 3px">
@@ -212,84 +207,54 @@
         // Hiển thị câu hỏi và các phương án trả lời trên trang web của bạn
 
         var questionHtml = "";
-        questionHtml += "<p style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
+        questionHtml += "<p id=\"pcauhoi\" style=\"text-align: center; margin: 20px; font-family: 'Open Sans', sans-serif; color: white; font-weight: bold; font-size: 15px\">";
         questionHtml += question.NoiDung;
         questionHtml += "</p>";
         $('#question-containers').html(questionHtml);
 
-        // Lấy thẻ div
-        var divElement = document.getElementById("donghocat1");
-
-        // Thiết lập thời gian và số bước chuyển màu
-        var duration = 10000; // 10 giây
-        var steps = 294; // Số bước chuyển màu
-
-        // Tính toán màu của từng bước
-        var endColor = [0, 128, 0]; // Màu xanh
-        var startColor = [255, 0, 0]; // Màu đỏ
-        var deltaColor = [
-            (endColor[0] - startColor[0]) / steps,
-            (endColor[1] - startColor[1]) / steps,
-            (endColor[2] - startColor[2]) / steps
-        ];
-
-        // Thiết lập background position mới sau mỗi bước
-        var i = 0;
-        var intervalId1 = setInterval(function () {
-            // Tính toán màu mới
-            var red = Math.round(startColor[0] + deltaColor[0] * i);
-            var green = Math.round(startColor[1] + deltaColor[1] * i);
-            var blue = Math.round(startColor[2] + deltaColor[2] * i);
-
-            // Thiết lập màu mới cho div
-            divElement.style.backgroundColor = "rgb(" + red + ", " + green + ", " + blue + ")";
-
-            // Thiết lập background position mới
-            divElement.style.backgroundPosition = "center " + (i * 2) + "px";
-
-            // Tăng giá trị i
-            i++;
-
-            // Kiểm tra nếu đã đạt đến cuối cùng thì dừng lại
-            if (i > steps) {
-                clearInterval(intervalId1);
-            }
-        }, duration / steps);
-
-        //var questionHtml = '<div>';
-        //questionHtml += '<p>' + question.NoiDung + '</p>';
-        //questionHtml += '</div>';
-
+        var donghocat = document.getElementById("donghocat");
+        // Thêm class "column" vào phần tử
+        donghocat.classList.add("column0");
 
         // Thiết lập lại giá trị của biến đếm timeLeft
         timeLeft = 10;
+
+        var pquestion = document.getElementById("pcauhoi");
 
         // Thiết lập hàm setInterval để cập nhật giá trị của biến đếm timeLeft và hiển thị giá trị đó trên trang web của bạn
         var intervalId = setInterval(function() {
             timeLeft--;
             $('#timer').text(timeLeft);
             if (timeLeft <= 0) {
+                donghocat.classList.remove("column0");
                 clearInterval(intervalId);
                 $("#submitButton").click();
+                pquestion.innerHTML += "<br><br>" + "ĐÁP ÁN: " + question.DapAn.toUpperCase();
                 questionIndex++;
                 if (questionIndex < cauhoi.length) {
-                    setTimeout(showQuestion, 500);
+                    setTimeout(function () {
+                        showQuestion();
+                    }, 5000);
                 } else {
                     // Hiển thị thông báo hoàn thành vòng 1
                     @*setTimeout(function () {
                         window.location.href = "/PhongCho/Vong2?phongdauid=" + @ViewBag.phongdauid;
                     }, 1);*@
-                    axios.post(`/phongcho/NavigateToPage2?phongchoid=${phongchoid}`)
-                        .then(function (response) {
-                            //làm gì đóoo
-                            console.log("số lần gọi: " + solangoi1);
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
+                    setTimeout(function () {
+                        /*axios.post(`/phongcho/NavigateToPage2?phongchoid=${phongchoid}`)*/
+                        axios.post(`/phongcho/NavigateToResult?phongchoid=${phongchoid}&vongdau=1`)
+                            .then(function (response) {
+                                //làm gì đóoo
+                                console.log("số lần gọi: " + solangoi1);
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });
+                    }, 5000);
+                    
                 }
             }
-        }, 500);
+        }, 1000);
 
 
     }
